@@ -50,40 +50,61 @@ const Index = () => {
     '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓', '🆔', '⚛️', '🉑', '☢️', '☣️', '📴', '📳'
   ];
 
-  // Enhanced emoji encoding for all Unicode characters
+  // Fixed emoji encoding that preserves Unicode data
   const encodeWithEmojis = (text: string): string => {
-    const textBytes = new TextEncoder().encode(text);
+    console.log('Encoding text:', text);
+    
+    // Convert text to Base64 first to preserve Unicode
+    const base64Text = btoa(unescape(encodeURIComponent(text)));
+    console.log('Base64 text:', base64Text);
+    
     let encoded = '';
     
-    for (let i = 0; i < textBytes.length; i++) {
-      const byteValue = textBytes[i];
-      const emojiIndex = byteValue % emojiSet.length;
+    // Convert each character of base64 to emojis
+    for (let i = 0; i < base64Text.length; i++) {
+      const charCode = base64Text.charCodeAt(i);
+      const emojiIndex = charCode % emojiSet.length;
       encoded += emojiSet[emojiIndex];
     }
     
+    console.log('Encoded emojis:', encoded);
     return encoded;
   };
 
-  // Decode emojis back to original text
+  // Fixed emoji decoding that properly reconstructs Unicode
   const decodeFromEmojis = (emojiText: string): string => {
+    console.log('Decoding emojis:', emojiText);
+    
     try {
       const emojiArray = Array.from(emojiText);
-      const bytes: number[] = [];
+      let base64Text = '';
       
+      // Convert each emoji back to base64 character
       for (let emoji of emojiArray) {
         const emojiIndex = emojiSet.indexOf(emoji);
-        if (emojiIndex !== -1) {
-          // We need to reconstruct the original byte value
-          // This is a simplified approach - in a real implementation, 
-          // you'd need to store the mapping more precisely
-          bytes.push(emojiIndex);
+        if (emojiIndex === -1) {
+          console.log('Unknown emoji found:', emoji);
+          throw new Error('Invalid emoji in encoded message');
+        }
+        
+        // Find the original character that would map to this emoji index
+        for (let charCode = 0; charCode < 256; charCode++) {
+          if (charCode % emojiSet.length === emojiIndex) {
+            base64Text += String.fromCharCode(charCode);
+            break;
+          }
         }
       }
       
-      // Try to decode as UTF-8
-      const uint8Array = new Uint8Array(bytes);
-      return new TextDecoder().decode(uint8Array);
+      console.log('Reconstructed base64:', base64Text);
+      
+      // Decode from base64 back to original Unicode text
+      const decodedText = decodeURIComponent(escape(atob(base64Text)));
+      console.log('Final decoded text:', decodedText);
+      
+      return decodedText;
     } catch (error) {
+      console.error('Emoji decoding error:', error);
       return 'Invalid emoji message or decoding error';
     }
   };
@@ -91,6 +112,8 @@ const Index = () => {
   // Enhanced cipher algorithm with Unicode support
   const encodeMessage = (text: string, key: string, method: string): string => {
     if (!text || !key) return '';
+    
+    console.log('Encoding message with method:', method);
     
     if (method === 'emoji') {
       // For emoji method, we first apply the password-based encoding, then convert to emojis
@@ -103,6 +126,8 @@ const Index = () => {
   };
 
   const applyPasswordEncoding = (text: string, key: string): string => {
+    console.log('Applying password encoding to:', text);
+    
     let encoded = '';
     const textArray = Array.from(text); // Properly handle Unicode characters
     const keyArray = Array.from(key);
@@ -114,26 +139,36 @@ const Index = () => {
       encoded += encodedChar;
     }
     
-    return btoa(unescape(encodeURIComponent(encoded))); // Proper Unicode Base64 encoding
+    const result = btoa(unescape(encodeURIComponent(encoded))); // Proper Unicode Base64 encoding
+    console.log('Password encoded result:', result);
+    return result;
   };
 
   const decodeMessage = (encodedText: string, key: string, method: string): string => {
     if (!encodedText || !key) return '';
     
+    console.log('Decoding message with method:', method);
+    
     try {
       if (method === 'emoji') {
         // First decode from emojis, then apply password decoding
         const emojiDecoded = decodeFromEmojis(encodedText);
+        if (emojiDecoded.includes('Invalid') || emojiDecoded.includes('error')) {
+          return emojiDecoded;
+        }
         return applyPasswordDecoding(emojiDecoded, key);
       }
       
       return applyPasswordDecoding(encodedText, key);
     } catch (error) {
+      console.error('Decoding error:', error);
       return 'Invalid encoded message or wrong password';
     }
   };
 
   const applyPasswordDecoding = (encodedText: string, key: string): string => {
+    console.log('Applying password decoding to:', encodedText);
+    
     try {
       // Unicode-aware decoding
       const decoded = decodeURIComponent(escape(atob(encodedText))); // Proper Unicode Base64 decoding
@@ -148,8 +183,10 @@ const Index = () => {
         original += originalChar;
       }
       
+      console.log('Password decoded result:', original);
       return original;
     } catch (error) {
+      console.error('Password decoding error:', error);
       return 'Invalid encoded message or wrong password';
     }
   };
