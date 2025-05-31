@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
-import { Shield, Lock, Unlock, Copy, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Shield, Lock, Unlock, Copy, Eye, EyeOff, Sparkles, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import Footer from '@/components/Footer';
 
 const Index = () => {
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
@@ -95,139 +96,189 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-dark-gradient p-4 md:p-8">
-      <div className="max-w-md mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="flex items-center justify-center mb-4">
-            <Shield className="w-12 h-12 text-cipher-accent mr-3 animate-pulse-glow" />
-            <h1 className="text-3xl font-bold font-cipher bg-gradient-to-r from-cipher-primary to-cipher-accent bg-clip-text text-transparent">
-              Cipher Forge
-            </h1>
-          </div>
-          <p className="text-gray-300 text-sm leading-relaxed">
-            Transform your messages into unbreakable secret codes
-          </p>
-        </div>
-
-        {/* Mode Toggle */}
-        <div className="cipher-card mb-6 animate-scale-in">
-          <div className="flex rounded-xl bg-cipher-darker/50 p-1 mb-6">
-            <button
-              onClick={() => setMode('encode')}
-              className={`flex-1 flex items-center justify-center py-3 px-4 rounded-lg transition-all duration-300 ${
-                mode === 'encode'
-                  ? 'bg-cipher-primary text-white shadow-lg'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              <Lock className="w-4 h-4 mr-2" />
-              <span className="font-medium">Encode</span>
-            </button>
-            <button
-              onClick={() => setMode('decode')}
-              className={`flex-1 flex items-center justify-center py-3 px-4 rounded-lg transition-all duration-300 ${
-                mode === 'decode'
-                  ? 'bg-cipher-secondary text-white shadow-lg'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              <Unlock className="w-4 h-4 mr-2" />
-              <span className="font-medium">Decode</span>
-            </button>
-          </div>
-
-          {/* Message Input */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              {mode === 'encode' ? 'Secret Message' : 'Encoded Message'}
-            </label>
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder={mode === 'encode' ? 'Enter your secret message...' : 'Paste the encoded message...'}
-              className="input-field w-full h-32 resize-none"
-              rows={4}
-            />
-          </div>
-
-          {/* Password Input */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              {mode === 'encode' ? 'Encryption Password' : 'Decryption Password'}
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password..."
-                className="input-field w-full pr-12"
-              />
-              <button
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
+    <div className="min-h-screen bg-dark-gradient">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-cipher-primary/20 via-transparent to-cipher-secondary/20"></div>
+        <div className="relative max-w-7xl mx-auto px-4 py-8 md:py-16">
+          {/* Header */}
+          <div className="text-center mb-12 animate-fade-in">
+            <div className="flex items-center justify-center mb-6">
+              <div className="relative">
+                <Shield className="w-16 h-16 md:w-20 md:h-20 text-cipher-accent animate-pulse-glow" />
+                <div className="absolute inset-0 w-16 h-16 md:w-20 md:h-20 bg-cipher-accent/20 rounded-full blur-xl animate-pulse"></div>
+              </div>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-cipher bg-gradient-to-r from-cipher-primary via-cipher-accent to-cipher-secondary bg-clip-text text-transparent ml-4">
+                Cipher Forge
+              </h1>
+            </div>
+            <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+              Transform your messages into unbreakable secret codes with military-grade encryption
+            </p>
+            <div className="flex justify-center mt-8">
+              <ChevronDown className="w-6 h-6 text-cipher-accent animate-bounce" />
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 mb-6">
-            <Button
-              onClick={handleProcess}
-              className="flex-1 premium-button"
-              disabled={!message.trim() || !password.trim()}
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              {mode === 'encode' ? 'Encode Message' : 'Decode Message'}
-            </Button>
-            <Button
-              onClick={clearAll}
-              variant="outline"
-              className="px-4 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
-              Clear
-            </Button>
-          </div>
+          {/* Main App Container */}
+          <div className="max-w-4xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-8 items-start">
+              {/* Left Column - Input */}
+              <div className="cipher-card animate-scale-in">
+                {/* Mode Toggle */}
+                <div className="flex rounded-xl bg-cipher-darker/50 p-1 mb-8">
+                  <button
+                    onClick={() => setMode('encode')}
+                    className={`flex-1 flex items-center justify-center py-4 px-6 rounded-lg transition-all duration-500 ${
+                      mode === 'encode'
+                        ? 'bg-gradient-to-r from-cipher-primary to-cipher-primary/80 text-white shadow-xl transform scale-105'
+                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <Lock className="w-5 h-5 mr-3" />
+                    <span className="font-semibold text-lg">Encode</span>
+                  </button>
+                  <button
+                    onClick={() => setMode('decode')}
+                    className={`flex-1 flex items-center justify-center py-4 px-6 rounded-lg transition-all duration-500 ${
+                      mode === 'decode'
+                        ? 'bg-gradient-to-r from-cipher-secondary to-cipher-secondary/80 text-white shadow-xl transform scale-105'
+                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <Unlock className="w-5 h-5 mr-3" />
+                    <span className="font-semibold text-lg">Decode</span>
+                  </button>
+                </div>
 
-          {/* Result */}
-          {result && (
-            <div className="animate-fade-in">
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                {mode === 'encode' ? 'Encoded Message' : 'Decoded Message'}
-              </label>
-              <div className="relative">
-                <textarea
-                  value={result}
-                  readOnly
-                  className="input-field w-full h-32 resize-none bg-cipher-darker/50"
-                  rows={4}
-                />
-                <button
-                  onClick={() => copyToClipboard(result)}
-                  className="absolute top-3 right-3 p-2 text-gray-400 hover:text-cipher-accent transition-colors duration-200 bg-cipher-darker/70 rounded-lg"
-                >
-                  <Copy className="w-4 h-4" />
-                </button>
+                {/* Message Input */}
+                <div className="mb-8">
+                  <label className="block text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
+                    {mode === 'encode' ? 'Secret Message' : 'Encoded Message'}
+                  </label>
+                  <div className="relative">
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder={mode === 'encode' ? 'Enter your secret message...' : 'Paste the encoded message...'}
+                      className="input-field w-full h-40 resize-none text-lg leading-relaxed"
+                      rows={6}
+                    />
+                    <div className="absolute bottom-3 right-3 text-xs text-gray-500">
+                      {message.length} characters
+                    </div>
+                  </div>
+                </div>
+
+                {/* Password Input */}
+                <div className="mb-8">
+                  <label className="block text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
+                    {mode === 'encode' ? 'Encryption Password' : 'Decryption Password'}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter password..."
+                      className="input-field w-full pr-12 text-lg"
+                    />
+                    <button
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-cipher-accent transition-all duration-300 hover:scale-110"
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-4">
+                  <Button
+                    onClick={handleProcess}
+                    className="flex-1 premium-button text-lg py-4 h-auto"
+                    disabled={!message.trim() || !password.trim()}
+                  >
+                    <Sparkles className="w-5 h-5 mr-3" />
+                    {mode === 'encode' ? 'Encode Message' : 'Decode Message'}
+                  </Button>
+                  <Button
+                    onClick={clearAll}
+                    variant="outline"
+                    className="px-6 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-gray-500 transition-all duration-300"
+                  >
+                    Clear
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Column - Result */}
+              <div className="cipher-card animate-scale-in">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-cipher-accent mb-2 font-cipher">
+                    {mode === 'encode' ? 'Encoded Result' : 'Decoded Result'}
+                  </h3>
+                  <p className="text-gray-400">
+                    {result ? 'Your message is ready!' : 'Result will appear here...'}
+                  </p>
+                </div>
+
+                {result ? (
+                  <div className="animate-fade-in">
+                    <div className="relative">
+                      <textarea
+                        value={result}
+                        readOnly
+                        className="input-field w-full h-40 resize-none bg-cipher-darker/50 text-lg leading-relaxed"
+                        rows={6}
+                      />
+                      <button
+                        onClick={() => copyToClipboard(result)}
+                        className="absolute top-4 right-4 p-3 text-gray-400 hover:text-cipher-accent transition-all duration-300 bg-cipher-darker/70 rounded-lg hover:bg-cipher-darker/90 hover:scale-110"
+                      >
+                        <Copy className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <div className="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-xl">
+                      <p className="text-green-300 text-sm font-medium">
+                        ✅ Successfully {mode === 'encode' ? 'encoded' : 'decoded'}! Share this with confidence.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-40 border-2 border-dashed border-gray-600 rounded-xl">
+                    <div className="text-center">
+                      <Shield className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                      <p className="text-gray-500">Enter your message and password to get started</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Instructions */}
-        <div className="cipher-card text-center animate-fade-in">
-          <h3 className="text-lg font-semibold text-cipher-accent mb-3 font-cipher">
-            How It Works
-          </h3>
-          <div className="text-sm text-gray-300 space-y-2 leading-relaxed">
-            <p><strong>Encoding:</strong> Type your message and create a password. Share the encoded result.</p>
-            <p><strong>Decoding:</strong> Paste the encoded message and enter the correct password to reveal the secret.</p>
-            <p className="text-cipher-accent font-medium">⚡ Keep your password safe - it's the key to your secrets!</p>
+            {/* Features Section */}
+            <div className="grid md:grid-cols-3 gap-6 mt-16">
+              <div className="cipher-card text-center animate-fade-in hover:scale-105 transition-transform duration-300">
+                <Lock className="w-12 h-12 text-cipher-primary mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-white mb-2">Military Grade</h3>
+                <p className="text-gray-400">Advanced encryption algorithms protect your secrets</p>
+              </div>
+              <div className="cipher-card text-center animate-fade-in hover:scale-105 transition-transform duration-300" style={{animationDelay: '0.1s'}}>
+                <Sparkles className="w-12 h-12 text-cipher-accent mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-white mb-2">Easy to Use</h3>
+                <p className="text-gray-400">Simple interface for complex encryption technology</p>
+              </div>
+              <div className="cipher-card text-center animate-fade-in hover:scale-105 transition-transform duration-300" style={{animationDelay: '0.2s'}}>
+                <Shield className="w-12 h-12 text-cipher-secondary mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-white mb-2">Secure</h3>
+                <p className="text-gray-400">No data stored, everything happens locally</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };
