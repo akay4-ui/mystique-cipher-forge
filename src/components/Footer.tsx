@@ -66,8 +66,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/api" className="text-gray-400 hover:text-cipher-accent transition-colors duration-300">
-                  API Reference
+                <Link to="/faq" className="text-gray-400 hover:text-cipher-accent transition-colors duration-300">
+                  FAQ
                 </Link>
               </li>
             </ul>

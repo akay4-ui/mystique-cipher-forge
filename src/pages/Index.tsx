@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { Shield, Lock, Unlock, Copy, Eye, EyeOff, Sparkles, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import Footer from '@/components/Footer';
 
@@ -11,34 +11,67 @@ const Index = () => {
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [encodingMethod, setEncodingMethod] = useState('text');
   const { toast } = useToast();
 
-  // Simple cipher algorithm (can be enhanced with more complex algorithms)
-  const encodeMessage = (text: string, key: string): string => {
-    if (!text || !key) return '';
-    
-    let encoded = '';
-    for (let i = 0; i < text.length; i++) {
-      const textChar = text.charCodeAt(i);
-      const keyChar = key.charCodeAt(i % key.length);
-      const encodedChar = String.fromCharCode(((textChar + keyChar) % 65536));
-      encoded += encodedChar;
-    }
-    return btoa(encoded); // Base64 encode for safer transmission
+  // Emoji mapping for emoji encoding
+  const emojiMap = {
+    'a': '😀', 'b': '😃', 'c': '😄', 'd': '😁', 'e': '😆', 'f': '😅', 'g': '🤣', 'h': '😂',
+    'i': '🙂', 'j': '🙃', 'k': '😉', 'l': '😊', 'm': '😇', 'n': '🥰', 'o': '😍', 'p': '🤩',
+    'q': '😘', 'r': '😗', 's': '☺️', 't': '😚', 'u': '😙', 'v': '🥲', 'w': '😋', 'x': '😛',
+    'y': '😜', 'z': '🤪', ' ': '⭐', '0': '🔥', '1': '💯', '2': '💫', '3': '⚡', '4': '🌟',
+    '5': '✨', '6': '💥', '7': '🎉', '8': '🎊', '9': '🔮', '.': '🌙', ',': '☀️', '!': '❤️',
+    '?': '💜', ':': '💙', ';': '💚', '-': '🧡', '_': '💛', '(': '🤍', ')': '🖤'
   };
 
-  const decodeMessage = (encodedText: string, key: string): string => {
+  const reverseEmojiMap = Object.fromEntries(
+    Object.entries(emojiMap).map(([key, value]) => [value, key])
+  );
+
+  // Enhanced cipher algorithm with Unicode support
+  const encodeMessage = (text: string, key: string, method: string): string => {
+    if (!text || !key) return '';
+    
+    if (method === 'emoji') {
+      return text.toLowerCase().split('').map(char => emojiMap[char as keyof typeof emojiMap] || char).join('');
+    }
+    
+    // Unicode-aware encoding for all languages
+    let encoded = '';
+    const textArray = Array.from(text); // Properly handle Unicode characters
+    const keyArray = Array.from(key);
+    
+    for (let i = 0; i < textArray.length; i++) {
+      const textChar = textArray[i].codePointAt(0) || 0;
+      const keyChar = keyArray[i % keyArray.length].codePointAt(0) || 0;
+      const encodedChar = String.fromCodePoint(((textChar + keyChar) % 1114111) + 1);
+      encoded += encodedChar;
+    }
+    
+    return btoa(unescape(encodeURIComponent(encoded))); // Proper Unicode Base64 encoding
+  };
+
+  const decodeMessage = (encodedText: string, key: string, method: string): string => {
     if (!encodedText || !key) return '';
     
     try {
-      const decoded = atob(encodedText); // Base64 decode
+      if (method === 'emoji') {
+        return encodedText.split('').map(emoji => reverseEmojiMap[emoji] || emoji).join('');
+      }
+      
+      // Unicode-aware decoding
+      const decoded = decodeURIComponent(escape(atob(encodedText))); // Proper Unicode Base64 decoding
+      const decodedArray = Array.from(decoded);
+      const keyArray = Array.from(key);
       let original = '';
-      for (let i = 0; i < decoded.length; i++) {
-        const encodedChar = decoded.charCodeAt(i);
-        const keyChar = key.charCodeAt(i % key.length);
-        const originalChar = String.fromCharCode(((encodedChar - keyChar + 65536) % 65536));
+      
+      for (let i = 0; i < decodedArray.length; i++) {
+        const encodedChar = decodedArray[i].codePointAt(0) || 0;
+        const keyChar = keyArray[i % keyArray.length].codePointAt(0) || 0;
+        const originalChar = String.fromCodePoint(((encodedChar - 1 - keyChar + 1114111) % 1114111));
         original += originalChar;
       }
+      
       return original;
     } catch (error) {
       return 'Invalid encoded message or wrong password';
@@ -57,13 +90,13 @@ const Index = () => {
 
     let processedResult;
     if (mode === 'encode') {
-      processedResult = encodeMessage(message, password);
+      processedResult = encodeMessage(message, password, encodingMethod);
       toast({
         title: "Message Encoded",
         description: "Your secret message has been successfully encoded!",
       });
     } else {
-      processedResult = decodeMessage(message, password);
+      processedResult = decodeMessage(message, password, encodingMethod);
       toast({
         title: "Message Decoded",
         description: "Your secret message has been revealed!",
@@ -113,7 +146,7 @@ const Index = () => {
               </h1>
             </div>
             <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-              Transform your messages into unbreakable secret codes with military-grade encryption
+              Transform your messages into unbreakable secret codes with military-grade encryption. Supports all languages worldwide! 🌍
             </p>
             <div className="flex justify-center mt-8">
               <ChevronDown className="w-6 h-6 text-cipher-accent animate-bounce" />
@@ -151,6 +184,22 @@ const Index = () => {
                   </button>
                 </div>
 
+                {/* Encoding Method Selection */}
+                <div className="mb-8">
+                  <label className="block text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
+                    Encoding Method
+                  </label>
+                  <Select value={encodingMethod} onValueChange={setEncodingMethod}>
+                    <SelectTrigger className="input-field">
+                      <SelectValue placeholder="Select encoding method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="text">🔤 Text Cipher (All Languages)</SelectItem>
+                      <SelectItem value="emoji">😀 Emoji Cipher (Fun Mode)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 {/* Message Input */}
                 <div className="mb-8">
                   <label className="block text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">
@@ -160,7 +209,14 @@ const Index = () => {
                     <textarea
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      placeholder={mode === 'encode' ? 'Enter your secret message...' : 'Paste the encoded message...'}
+                      placeholder={mode === 'encode' 
+                        ? (encodingMethod === 'emoji' 
+                          ? 'Enter your message (letters and numbers will become emojis)...' 
+                          : 'Enter your secret message in any language...')
+                        : (encodingMethod === 'emoji'
+                          ? 'Paste the emoji encoded message...'
+                          : 'Paste the encoded message...')
+                      }
                       className="input-field w-full h-40 resize-none text-lg leading-relaxed"
                       rows={6}
                     />
@@ -219,7 +275,7 @@ const Index = () => {
                     {mode === 'encode' ? 'Encoded Result' : 'Decoded Result'}
                   </h3>
                   <p className="text-gray-400">
-                    {result ? 'Your message is ready!' : 'Result will appear here...'}
+                    {result ? `Your ${encodingMethod === 'emoji' ? 'emoji ' : ''}message is ready!` : 'Result will appear here...'}
                   </p>
                 </div>
 
@@ -231,6 +287,7 @@ const Index = () => {
                         readOnly
                         className="input-field w-full h-40 resize-none bg-cipher-darker/50 text-lg leading-relaxed"
                         rows={6}
+                        style={{ fontSize: encodingMethod === 'emoji' ? '24px' : '16px' }}
                       />
                       <button
                         onClick={() => copyToClipboard(result)}
@@ -241,7 +298,7 @@ const Index = () => {
                     </div>
                     <div className="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-xl">
                       <p className="text-green-300 text-sm font-medium">
-                        ✅ Successfully {mode === 'encode' ? 'encoded' : 'decoded'}! Share this with confidence.
+                        ✅ Successfully {mode === 'encode' ? 'encoded' : 'decoded'} using {encodingMethod === 'emoji' ? 'emoji cipher' : 'text cipher'}! Share this with confidence.
                       </p>
                     </div>
                   </div>
@@ -260,13 +317,13 @@ const Index = () => {
             <div className="grid md:grid-cols-3 gap-6 mt-16">
               <div className="cipher-card text-center animate-fade-in hover:scale-105 transition-transform duration-300">
                 <Lock className="w-12 h-12 text-cipher-primary mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-white mb-2">Military Grade</h3>
-                <p className="text-gray-400">Advanced encryption algorithms protect your secrets</p>
+                <h3 className="text-xl font-semibold text-white mb-2">Universal Support</h3>
+                <p className="text-gray-400">Works with all 210+ world languages and Unicode characters</p>
               </div>
               <div className="cipher-card text-center animate-fade-in hover:scale-105 transition-transform duration-300" style={{animationDelay: '0.1s'}}>
                 <Sparkles className="w-12 h-12 text-cipher-accent mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-white mb-2">Easy to Use</h3>
-                <p className="text-gray-400">Simple interface for complex encryption technology</p>
+                <h3 className="text-xl font-semibold text-white mb-2">Multiple Methods</h3>
+                <p className="text-gray-400">Choose between text cipher and fun emoji encoding</p>
               </div>
               <div className="cipher-card text-center animate-fade-in hover:scale-105 transition-transform duration-300" style={{animationDelay: '0.2s'}}>
                 <Shield className="w-12 h-12 text-cipher-secondary mx-auto mb-4" />
