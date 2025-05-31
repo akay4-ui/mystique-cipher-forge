@@ -92,8 +92,14 @@
   }
   
   .cipher-card {
-    @apply glass-effect rounded-2xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-500;
+    @apply glass-effect rounded-2xl p-6 shadow-2xl hover:shadow-2xl transition-all duration-500;
     background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .cipher-card:hover {
+    box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
   }
   
   .premium-button {
