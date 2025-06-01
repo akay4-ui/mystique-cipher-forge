@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Footer from '@/components/Footer';
@@ -13,23 +14,15 @@ const Index = () => {
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
   const [encodingMethod, setEncodingMethod] = useState('text');
-  const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-
     const handleVisibility = () => {
       setIsVisible(true);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
     setTimeout(handleVisibility, 100);
-
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleProcess = () => {
@@ -84,59 +77,23 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-dark-gradient overflow-x-hidden">
-      {/* Parallax Background Effects */}
+      {/* Simplified Background */}
       <div className="fixed inset-0 pointer-events-none">
-        <div 
-          className="absolute inset-0 bg-gradient-to-br from-cipher-primary/10 via-transparent to-cipher-secondary/10 transition-transform duration-1000"
-          style={{
-            transform: `translateY(${scrollY * 0.3}px) scale(${1 + scrollY * 0.0005})`
-          }}
-        />
-        <div 
-          className="absolute top-20 left-10 w-32 h-32 bg-cipher-accent/5 rounded-full blur-3xl animate-pulse"
-          style={{
-            transform: `translateY(${scrollY * 0.5}px) rotate(${scrollY * 0.1}deg)`
-          }}
-        />
-        <div 
-          className="absolute top-40 right-10 w-24 h-24 bg-cipher-primary/5 rounded-full blur-2xl animate-pulse"
-          style={{
-            transform: `translateY(${scrollY * -0.3}px) rotate(${scrollY * -0.1}deg)`
-          }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-br from-cipher-primary/5 via-transparent to-cipher-secondary/5" />
       </div>
 
-      {/* Hero Section with Parallax */}
+      {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-gradient-to-br from-cipher-primary/20 via-transparent to-cipher-secondary/20 transition-transform duration-1000"
-          style={{
-            transform: `translateY(${scrollY * 0.2}px)`
-          }}
-        />
-        <div className={`relative max-w-7xl mx-auto px-4 py-8 md:py-16 transition-all duration-1000 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        <div className={`relative max-w-7xl mx-auto px-4 py-8 md:py-16 transition-opacity duration-500 ${
+          isVisible ? 'opacity-100' : 'opacity-0'
         }`}>
-          <div 
-            style={{
-              transform: `translateY(${scrollY * 0.1}px)`
-            }}
-          >
-            <HeroSection />
-          </div>
+          <HeroSection />
 
-          {/* Main App Container with Scroll Animations */}
+          {/* Main App Container */}
           <div className="max-w-4xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-8 items-start">
-              {/* Left Column - Input with slide-in effect */}
-              <div 
-                className={`transition-all duration-1000 delay-200 ${
-                  scrollY > 50 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
-                }`}
-                style={{
-                  transform: `translateY(${scrollY * 0.05}px)`
-                }}
-              >
+              {/* Left Column - Input */}
+              <div className="animate-fade-in">
                 <EncodingForm
                   mode={mode}
                   setMode={setMode}
@@ -151,15 +108,8 @@ const Index = () => {
                 />
               </div>
 
-              {/* Right Column - Result with slide-in effect */}
-              <div 
-                className={`transition-all duration-1000 delay-400 ${
-                  scrollY > 50 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
-                }`}
-                style={{
-                  transform: `translateY(${scrollY * -0.05}px)`
-                }}
-              >
+              {/* Right Column - Result */}
+              <div className="animate-fade-in stagger-1">
                 <ResultDisplay
                   mode={mode}
                   result={result}
@@ -169,15 +119,8 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Features Section with Staggered Animation */}
-            <div 
-              className={`transition-all duration-1000 delay-600 ${
-                scrollY > 200 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-              }`}
-              style={{
-                transform: `translateY(${scrollY * 0.02}px)`
-              }}
-            >
+            {/* Features Section */}
+            <div className="animate-fade-in stagger-2">
               <FeaturesSection />
             </div>
           </div>
@@ -185,19 +128,6 @@ const Index = () => {
       </div>
 
       <Footer />
-
-      {/* Mobile Scroll Indicator */}
-      <div className="fixed bottom-6 right-6 lg:hidden z-50">
-        <div 
-          className="w-12 h-12 rounded-full bg-cipher-primary/20 backdrop-blur-lg border border-cipher-primary/30 flex items-center justify-center transition-all duration-300"
-          style={{
-            transform: `scale(${1 + Math.sin(scrollY * 0.01) * 0.1}) rotate(${scrollY * 0.5}deg)`,
-            opacity: scrollY > 100 ? 0.8 : 0.4
-          }}
-        >
-          <div className="w-2 h-2 bg-cipher-accent rounded-full animate-pulse" />
-        </div>
-      </div>
     </div>
   );
 };
