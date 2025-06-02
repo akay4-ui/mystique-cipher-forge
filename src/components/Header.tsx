@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Shield, Sun, Moon } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { Link } from 'react-router-dom';
 import MobileNavigation from './MobileNavigation';
@@ -12,15 +11,18 @@ const Header: React.FC = () => {
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="relative">
-              <Shield className="w-8 h-8 text-primary" />
-            </div>
-            <h1 className="text-xl md:text-2xl font-bold font-brand text-foreground">
-              Cipher Forge
-            </h1>
-          </Link>
+          {/* Theme Toggle on the left */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg bg-muted hover:bg-accent transition-colors duration-200"
+            aria-label="Toggle theme"
+          >
+            {theme === 'light' ? (
+              <Moon className="w-5 h-5 text-foreground" />
+            ) : (
+              <Sun className="w-5 h-5 text-foreground" />
+            )}
+          </button>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
@@ -35,18 +37,8 @@ const Header: React.FC = () => {
             </Link>
           </nav>
 
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-lg bg-muted hover:bg-accent transition-colors duration-200"
-            aria-label="Toggle theme"
-          >
-            {theme === 'light' ? (
-              <Moon className="w-5 h-5 text-foreground" />
-            ) : (
-              <Sun className="w-5 h-5 text-foreground" />
-            )}
-          </button>
+          {/* Empty div to maintain spacing */}
+          <div className="w-10"></div>
         </div>
       </div>
 
