@@ -32,83 +32,88 @@ const EncodingForm: React.FC<EncodingFormProps> = ({
 
   return (
     <div className="cipher-card animate-scale-in">
-      {/* Mode Toggle */}
-      <div className="mode-toggle mb-6">
+      {/* Enhanced Mode Toggle with rounded corners filling gaps */}
+      <div className="bg-muted/50 rounded-2xl p-1 flex mb-6 border border-border/50">
         <button
           onClick={() => setMode('encode')}
-          className={`mode-toggle-button ${mode === 'encode' ? 'active' : ''}`}
+          className={`flex-1 flex items-center justify-center py-3 px-4 rounded-xl transition-all duration-300 font-medium relative overflow-hidden ${
+            mode === 'encode'
+              ? 'bg-primary text-primary-foreground shadow-lg scale-[0.98] transform'
+              : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+          }`}
         >
           <Lock className="w-4 h-4 mr-2" />
           <span className="font-medium">Encode</span>
+          {mode === 'encode' && (
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent rounded-xl" />
+          )}
         </button>
         <button
           onClick={() => setMode('decode')}
-          className={`mode-toggle-button ${mode === 'decode' ? 'active' : ''}`}
+          className={`flex-1 flex items-center justify-center py-3 px-4 rounded-xl transition-all duration-300 font-medium relative overflow-hidden ${
+            mode === 'decode'
+              ? 'bg-primary text-primary-foreground shadow-lg scale-[0.98] transform'
+              : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+          }`}
         >
           <Unlock className="w-4 h-4 mr-2" />
           <span className="font-medium">Decode</span>
+          {mode === 'decode' && (
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent rounded-xl" />
+          )}
         </button>
       </div>
 
-      {/* Encoding Method Selection */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-foreground mb-3">
-          Encoding Method
+      {/* Compact Encoding Method Selection */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-foreground mb-2">
+          Method
         </label>
         <Select value={encodingMethod} onValueChange={setEncodingMethod}>
           <SelectTrigger className="cipher-input">
-            <SelectValue placeholder="Select encoding method" />
+            <SelectValue placeholder="Select method" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="text">🔤 Text Cipher (All Languages)</SelectItem>
-            <SelectItem value="emoji">😀 Emoji Cipher (Fun & Visual)</SelectItem>
+            <SelectItem value="text">🔤 Text Cipher</SelectItem>
+            <SelectItem value="emoji">😀 Emoji Cipher</SelectItem>
           </SelectContent>
         </Select>
-        {encodingMethod === 'emoji' && (
-          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-            ✨ Converts any language to emojis using 200+ emojis from all platforms
-          </p>
-        )}
       </div>
 
-      {/* Message Input */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-foreground mb-3">
-          {mode === 'encode' ? 'Secret Message' : 'Encoded Message'}
+      {/* Compact Message Input */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-foreground mb-2">
+          {mode === 'encode' ? 'Message' : 'Encoded Text'}
         </label>
         <div className="relative">
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder={mode === 'encode' 
-              ? (encodingMethod === 'emoji' 
-                ? 'Enter your message in any language (Arabic, Chinese, Urdu, etc.) - will become emojis...' 
-                : 'Enter your secret message in any language...')
-              : (encodingMethod === 'emoji'
-                ? 'Paste the emoji encoded message...'
-                : 'Paste the encoded message...')
+              ? 'Enter your secret message...' 
+              : 'Paste encoded message...'
             }
-            className="cipher-input w-full h-32 resize-none"
-            rows={6}
+            className="cipher-input w-full h-24 resize-none text-sm"
+            rows={4}
           />
           <div className="absolute bottom-2 right-2 text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-            {message.length} chars
+            {message.length}
           </div>
         </div>
       </div>
 
-      {/* Password Input */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-foreground mb-3">
-          {mode === 'encode' ? 'Encryption Password' : 'Decryption Password'}
+      {/* Compact Password Input */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-foreground mb-2">
+          Password
         </label>
         <div className="relative">
           <input
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter a strong password..."
-            className="cipher-input w-full pr-12"
+            placeholder="Enter password..."
+            className="cipher-input w-full pr-12 text-sm"
           />
           <button
             onClick={() => setShowPassword(!showPassword)}
@@ -119,22 +124,21 @@ const EncodingForm: React.FC<EncodingFormProps> = ({
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      {/* Compact Action Buttons */}
+      <div className="flex gap-3">
         <button
           onClick={onProcess}
-          className="mobile-button flex-1 flex items-center justify-center"
+          className="mobile-button flex-1 flex items-center justify-center text-sm"
           disabled={!message.trim() || !password.trim()}
         >
           <Sparkles className="w-4 h-4 mr-2" />
-          {mode === 'encode' ? 'Encode Message' : 'Decode Message'}
+          {mode === 'encode' ? 'Encode' : 'Decode'}
         </button>
         <button
           onClick={onClear}
-          className="mobile-button-secondary flex items-center justify-center sm:w-auto"
+          className="mobile-button-secondary px-4 flex items-center justify-center text-sm"
         >
-          <Eraser className="w-4 h-4 mr-2" />
-          Clear
+          <Eraser className="w-4 h-4" />
         </button>
       </div>
     </div>

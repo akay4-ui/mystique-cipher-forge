@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Menu, X, Settings, HelpCircle, Shield, FileText, Home } from 'lucide-react';
+import { Menu, X, Settings, HelpCircle, Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from './ThemeProvider';
 
@@ -12,7 +12,7 @@ const MobileNavigation: React.FC = () => {
   const menuItems = [
     { title: 'Home', path: '/', icon: Home },
     { title: 'How It Works', path: '/how-it-works', icon: HelpCircle },
-    { title: 'Features', path: '/features', icon: Shield },
+    { title: 'Features', path: '/features', icon: HelpCircle },
     { title: 'Help', path: '/help', icon: HelpCircle },
     { title: 'Settings', path: '/settings', icon: Settings },
   ];
@@ -21,13 +21,20 @@ const MobileNavigation: React.FC = () => {
 
   return (
     <>
-      {/* Menu Button */}
+      {/* Menu Button with distinct background */}
       <button
         onClick={toggleMenu}
-        className="fixed top-4 right-4 z-50 p-3 bg-background border border-border rounded-full shadow-lg md:hidden"
+        className="fixed top-4 right-4 z-50 p-3 bg-card border-2 border-primary/20 rounded-full shadow-xl md:hidden backdrop-blur-sm"
+        style={{
+          backgroundColor: theme === 'dark' ? 'hsl(217.2 32.6% 15%)' : 'hsl(0 0% 98%)',
+        }}
         aria-label="Menu"
       >
-        {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        {isMenuOpen ? (
+          <X className="w-5 h-5 text-primary" />
+        ) : (
+          <Menu className="w-5 h-5 text-primary" />
+        )}
       </button>
 
       {/* Overlay */}
@@ -38,11 +45,14 @@ const MobileNavigation: React.FC = () => {
         />
       )}
 
-      {/* Side Menu */}
+      {/* Side Menu with distinct background */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 bg-background border-l border-border shadow-xl z-40 transform transition-transform duration-300 md:hidden ${
+        className={`fixed top-0 right-0 h-full w-80 border-l-2 border-primary/20 shadow-2xl z-40 transform transition-all duration-300 md:hidden backdrop-blur-md ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
+        style={{
+          backgroundColor: theme === 'dark' ? 'hsl(217.2 32.6% 12%)' : 'hsl(0 0% 96%)',
+        }}
       >
         <div className="p-6 pt-20">
           <nav className="space-y-2">
@@ -51,10 +61,10 @@ const MobileNavigation: React.FC = () => {
                 key={item.path}
                 to={item.path}
                 onClick={toggleMenu}
-                className={`flex items-center space-x-3 p-4 rounded-xl transition-colors ${
+                className={`flex items-center space-x-3 p-4 rounded-xl transition-all duration-200 ${
                   location.pathname === item.path
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-muted'
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'hover:bg-primary/10 text-foreground hover:text-primary'
                 }`}
               >
                 <item.icon className="w-5 h-5" />

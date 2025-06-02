@@ -6,7 +6,6 @@ import Footer from '@/components/Footer';
 import HeroSection from '@/components/HeroSection';
 import EncodingForm from '@/components/EncodingForm';
 import ResultDisplay from '@/components/ResultDisplay';
-import FeaturesSection from '@/components/FeaturesSection';
 import { encodeMessage, decodeMessage } from '@/utils/encodingUtils';
 import { ThemeProvider } from '@/components/ThemeProvider';
 
@@ -33,7 +32,7 @@ const Index = () => {
       processedResult = encodeMessage(message, password, encodingMethod);
       toast({
         title: "Message Encoded",
-        description: `Your secret message has been successfully encoded using ${encodingMethod === 'emoji' ? 'emoji cipher' : 'text cipher'}!`,
+        description: `Successfully encoded using ${encodingMethod} cipher!`,
       });
     } else {
       processedResult = decodeMessage(message, password, encodingMethod);
@@ -73,43 +72,35 @@ const Index = () => {
       <div className="min-h-screen bg-background">
         <Header />
         
-        {/* Hero Section */}
-        <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
+        {/* Main App Container - Compact Layout */}
+        <div className="max-w-6xl mx-auto px-4 py-4">
           <HeroSection />
 
-          {/* Main App Container - Mobile Optimized */}
-          <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start mb-8 md:mb-12">
-              {/* Left Column - Input */}
-              <div className="animate-fade-in">
-                <EncodingForm
-                  mode={mode}
-                  setMode={setMode}
-                  message={message}
-                  setMessage={setMessage}
-                  password={password}
-                  setPassword={setPassword}
-                  encodingMethod={encodingMethod}
-                  setEncodingMethod={setEncodingMethod}
-                  onProcess={handleProcess}
-                  onClear={clearAll}
-                />
-              </div>
-
-              {/* Right Column - Result */}
-              <div className="animate-fade-in" style={{animationDelay: '0.1s'}}>
-                <ResultDisplay
-                  mode={mode}
-                  result={result}
-                  encodingMethod={encodingMethod}
-                  onCopy={copyToClipboard}
-                />
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-start">
+            {/* Left Column - Input */}
+            <div className="animate-fade-in">
+              <EncodingForm
+                mode={mode}
+                setMode={setMode}
+                message={message}
+                setMessage={setMessage}
+                password={password}
+                setPassword={setPassword}
+                encodingMethod={encodingMethod}
+                setEncodingMethod={setEncodingMethod}
+                onProcess={handleProcess}
+                onClear={clearAll}
+              />
             </div>
 
-            {/* Features Section - Compact for Mobile */}
-            <div className="mt-8 md:mt-16">
-              <FeaturesSection />
+            {/* Right Column - Result */}
+            <div className="animate-fade-in" style={{animationDelay: '0.1s'}}>
+              <ResultDisplay
+                mode={mode}
+                result={result}
+                encodingMethod={encodingMethod}
+                onCopy={copyToClipboard}
+              />
             </div>
           </div>
         </div>
