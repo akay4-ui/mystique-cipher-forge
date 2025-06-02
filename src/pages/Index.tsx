@@ -74,12 +74,12 @@ const Index = () => {
         <Header />
         
         {/* Hero Section */}
-        <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+        <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
           <HeroSection />
 
-          {/* Main App Container */}
+          {/* Main App Container - Mobile Optimized */}
           <div className="max-w-5xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-start mb-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start mb-8 md:mb-12">
               {/* Left Column - Input */}
               <div className="animate-fade-in">
                 <EncodingForm
@@ -107,7 +107,10 @@ const Index = () => {
               </div>
             </div>
 
-            <FeaturesSection />
+            {/* Features Section - Compact for Mobile */}
+            <div className="mt-8 md:mt-16">
+              <FeaturesSection />
+            </div>
           </div>
         </div>
 

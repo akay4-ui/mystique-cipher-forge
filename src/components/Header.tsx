@@ -2,23 +2,38 @@
 import React from 'react';
 import { Shield, Sun, Moon } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
+import { Link } from 'react-router-dom';
+import MobileNavigation from './MobileNavigation';
 
 const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-3">
+          <Link to="/" className="flex items-center space-x-3">
             <div className="relative">
               <Shield className="w-8 h-8 text-primary" />
             </div>
             <h1 className="text-xl md:text-2xl font-bold font-brand text-foreground">
               Cipher Forge
             </h1>
-          </div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+              How It Works
+            </Link>
+            <Link to="/features" className="text-muted-foreground hover:text-foreground transition-colors">
+              Features
+            </Link>
+            <Link to="/help" className="text-muted-foreground hover:text-foreground transition-colors">
+              Help
+            </Link>
+          </nav>
 
           {/* Theme Toggle */}
           <button
@@ -34,6 +49,9 @@ const Header: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Mobile Navigation */}
+      <MobileNavigation />
     </header>
   );
 };
