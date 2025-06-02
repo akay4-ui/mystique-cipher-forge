@@ -1,12 +1,14 @@
 
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import HeroSection from '@/components/HeroSection';
 import EncodingForm from '@/components/EncodingForm';
 import ResultDisplay from '@/components/ResultDisplay';
 import FeaturesSection from '@/components/FeaturesSection';
 import { encodeMessage, decodeMessage } from '@/utils/encodingUtils';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 const Index = () => {
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
@@ -67,46 +69,51 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-dark-gradient">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cipher-primary/20 via-transparent to-cipher-secondary/20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 py-8 md:py-16">
+    <ThemeProvider>
+      <div className="min-h-screen bg-background">
+        <Header />
+        
+        {/* Hero Section */}
+        <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
           <HeroSection />
 
           {/* Main App Container */}
-          <div className="max-w-4xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-8 items-start">
+          <div className="max-w-5xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-start mb-12">
               {/* Left Column - Input */}
-              <EncodingForm
-                mode={mode}
-                setMode={setMode}
-                message={message}
-                setMessage={setMessage}
-                password={password}
-                setPassword={setPassword}
-                encodingMethod={encodingMethod}
-                setEncodingMethod={setEncodingMethod}
-                onProcess={handleProcess}
-                onClear={clearAll}
-              />
+              <div className="animate-fade-in">
+                <EncodingForm
+                  mode={mode}
+                  setMode={setMode}
+                  message={message}
+                  setMessage={setMessage}
+                  password={password}
+                  setPassword={setPassword}
+                  encodingMethod={encodingMethod}
+                  setEncodingMethod={setEncodingMethod}
+                  onProcess={handleProcess}
+                  onClear={clearAll}
+                />
+              </div>
 
               {/* Right Column - Result */}
-              <ResultDisplay
-                mode={mode}
-                result={result}
-                encodingMethod={encodingMethod}
-                onCopy={copyToClipboard}
-              />
+              <div className="animate-fade-in" style={{animationDelay: '0.1s'}}>
+                <ResultDisplay
+                  mode={mode}
+                  result={result}
+                  encodingMethod={encodingMethod}
+                  onCopy={copyToClipboard}
+                />
+              </div>
             </div>
 
             <FeaturesSection />
           </div>
         </div>
-      </div>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </ThemeProvider>
   );
 };
 

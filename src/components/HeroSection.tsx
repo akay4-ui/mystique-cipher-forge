@@ -7,18 +7,18 @@ const HeroSection: React.FC = () => {
     <div className="text-center mb-12 animate-fade-in">
       <div className="flex items-center justify-center mb-6">
         <div className="relative">
-          <Shield className="w-16 h-16 md:w-20 md:h-20 text-cipher-accent animate-pulse-glow" />
-          <div className="absolute inset-0 w-16 h-16 md:w-20 md:h-20 bg-cipher-accent/20 rounded-full blur-xl animate-pulse"></div>
+          <Shield className="w-12 h-12 md:w-16 md:h-16 text-primary" />
         </div>
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-cipher bg-gradient-to-r from-cipher-primary via-cipher-accent to-cipher-secondary bg-clip-text text-transparent ml-4">
+        <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold font-brand text-foreground ml-4">
           Cipher Forge
         </h1>
       </div>
-      <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-        Transform your messages into unbreakable secret codes with military-grade encryption. Supports all languages worldwide! 🌍
+      <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-8">
+        Transform your messages into unbreakable secret codes with military-grade encryption. 
+        Supports all languages worldwide! 🌍
       </p>
-      <div className="flex justify-center mt-8">
-        <ChevronDown className="w-6 h-6 text-cipher-accent animate-bounce" />
+      <div className="flex justify-center">
+        <ChevronDown className="w-5 h-5 text-primary animate-bounce" />
       </div>
     </div>
   );
