@@ -19,12 +19,13 @@ const MobileNavigation: React.FC = () => {
 
   return (
     <>
-      {/* Menu Button with distinct background */}
+      {/* Menu Button with enhanced styling */}
       <button
         onClick={toggleMenu}
-        className="fixed top-4 right-4 z-50 p-3 bg-card border-2 border-primary/20 rounded-full shadow-xl md:hidden backdrop-blur-sm"
+        className="fixed top-4 right-4 z-50 p-3 rounded-full shadow-xl md:hidden backdrop-blur-md border-2"
         style={{
-          backgroundColor: theme === 'dark' ? 'hsl(217.2 32.6% 15%)' : 'hsl(0 0% 98%)',
+          backgroundColor: theme === 'dark' ? 'rgba(30, 41, 59, 0.95)' : 'rgba(248, 250, 252, 0.95)',
+          borderColor: theme === 'dark' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)',
         }}
         aria-label="Menu"
       >
@@ -45,11 +46,14 @@ const MobileNavigation: React.FC = () => {
 
       {/* Side Menu with distinct background */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 border-l-2 border-primary/20 shadow-2xl z-40 transform transition-all duration-300 md:hidden backdrop-blur-md ${
+        className={`fixed top-0 right-0 h-full w-80 shadow-2xl z-40 transform transition-all duration-300 md:hidden backdrop-blur-xl border-l-2 ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{
-          backgroundColor: theme === 'dark' ? 'hsl(217.2 32.6% 12%)' : 'hsl(0 0% 96%)',
+          backgroundColor: theme === 'dark' 
+            ? 'rgba(15, 23, 42, 0.98)' 
+            : 'rgba(241, 245, 249, 0.98)',
+          borderColor: theme === 'dark' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)',
         }}
       >
         <div className="p-6 pt-20">
