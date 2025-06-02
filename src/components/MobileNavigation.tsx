@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Menu, X, Settings, HelpCircle, Home } from 'lucide-react';
+import { Menu, X, Settings, HelpCircle, FileText, Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from './ThemeProvider';
 
@@ -11,9 +11,7 @@ const MobileNavigation: React.FC = () => {
 
   const menuItems = [
     { title: 'Home', path: '/', icon: Home },
-    { title: 'How It Works', path: '/how-it-works', icon: HelpCircle },
     { title: 'Features', path: '/features', icon: HelpCircle },
-    { title: 'Help', path: '/help', icon: HelpCircle },
     { title: 'Settings', path: '/settings', icon: Settings },
   ];
 

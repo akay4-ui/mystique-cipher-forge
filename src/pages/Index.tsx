@@ -72,12 +72,12 @@ const Index = () => {
       <div className="min-h-screen bg-background">
         <Header />
         
-        {/* Main App Container - Compact Layout */}
-        <div className="max-w-6xl mx-auto px-4 py-4">
+        {/* Main App Container - Full width mobile layout */}
+        <div className="max-w-6xl mx-auto px-2 md:px-4 py-4">
           <HeroSection />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-start">
-            {/* Left Column - Input */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-6 items-start">
+            {/* Left Column - Input - Expanded for mobile */}
             <div className="animate-fade-in">
               <EncodingForm
                 mode={mode}
@@ -93,7 +93,7 @@ const Index = () => {
               />
             </div>
 
-            {/* Right Column - Result */}
+            {/* Right Column - Result - Expanded for mobile */}
             <div className="animate-fade-in" style={{animationDelay: '0.1s'}}>
               <ResultDisplay
                 mode={mode}

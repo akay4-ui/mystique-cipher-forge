@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Shield, Github, Twitter, Mail } from 'lucide-react';
+import { Shield, Mail, FileText, HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -19,15 +19,15 @@ const Footer = () => {
           </p>
 
           <div className="flex justify-center space-x-6">
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-              <Github className="w-5 h-5" />
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-              <Twitter className="w-5 h-5" />
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+            <Link to="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors">
+              <HelpCircle className="w-5 h-5" />
+            </Link>
+            <a href="mailto:support@cipherforge.com" className="text-muted-foreground hover:text-primary transition-colors">
               <Mail className="w-5 h-5" />
             </a>
+            <Link to="/privacy-policy" className="text-muted-foreground hover:text-primary transition-colors">
+              <FileText className="w-5 h-5" />
+            </Link>
           </div>
 
           <div className="text-muted-foreground text-xs">
@@ -75,8 +75,13 @@ const Footer = () => {
             <h3 className="text-foreground font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/help" className="text-muted-foreground hover:text-primary transition-colors duration-300">
-                  Help Center
+                <a href="mailto:support@cipherforge.com" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                  Contact Support
+                </a>
+              </li>
+              <li>
+                <Link to="/privacy-policy" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                  Privacy Policy
                 </Link>
               </li>
             </ul>
@@ -86,15 +91,15 @@ const Footer = () => {
           <div>
             <h3 className="text-foreground font-semibold mb-4">Connect</h3>
             <div className="flex space-x-4">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
-                <Github className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+              <Link to="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <HelpCircle className="w-5 h-5" />
+              </Link>
+              <a href="mailto:support@cipherforge.com" className="text-muted-foreground hover:text-primary transition-colors duration-300">
                 <Mail className="w-5 h-5" />
               </a>
+              <Link to="/privacy-policy" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <FileText className="w-5 h-5" />
+              </Link>
             </div>
           </div>
         </div>

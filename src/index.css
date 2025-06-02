@@ -124,9 +124,9 @@
 }
 
 @layer components {
-  /* Clean card design */
+  /* Clean card design - expanded for mobile */
   .cipher-card {
-    @apply bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300;
+    @apply bg-card border border-border rounded-2xl p-4 md:p-6 shadow-sm hover:shadow-md transition-all duration-300;
   }
   
   /* Mobile-optimized buttons */
@@ -195,7 +195,7 @@
   }
 }
 
-/* Minimal animations - only where needed */
+/* Enhanced animations */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -218,6 +218,15 @@
   }
 }
 
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
 }
@@ -226,14 +235,24 @@
   animation: scale-in 0.2s ease-out;
 }
 
-/* Mobile-first responsive design */
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Mobile-first responsive design - better corner fitting */
 @media (max-width: 640px) {
   .cipher-card {
-    @apply p-4;
+    @apply p-3 mx-1 rounded-xl;
   }
   
   .mobile-button,
   .mobile-button-secondary {
-    @apply text-base;
+    @apply text-base py-4;
+  }
+  
+  /* Better mobile spacing */
+  .max-w-6xl {
+    @apply px-1;
   }
 }
