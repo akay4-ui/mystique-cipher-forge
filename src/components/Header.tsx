@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Sun, Moon, Menu, X } from 'lucide-react';
+import { Sun, Moon, Menu, X, Settings, HelpCircle, Home } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -10,9 +10,9 @@ const Header: React.FC = () => {
   const location = useLocation();
 
   const menuItems = [
-    { title: 'Home', path: '/' },
-    { title: 'Features', path: '/features' },
-    { title: 'Settings', path: '/settings' },
+    { title: 'Home', path: '/', icon: Home },
+    { title: 'Features', path: '/features', icon: HelpCircle },
+    { title: 'Settings', path: '/settings', icon: Settings },
   ];
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -95,6 +95,7 @@ const Header: React.FC = () => {
                     : 'hover:bg-primary/10 text-foreground hover:text-primary'
                 }`}
               >
+                <item.icon className="w-5 h-5" />
                 <span className="font-medium">{item.title}</span>
               </Link>
             ))}
