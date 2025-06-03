@@ -9,19 +9,14 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
-  const menuItems = [
-    { title: 'Home', path: '/', icon: Home },
-    { title: 'Features', path: '/features', icon: HelpCircle },
-    { title: 'Settings', path: '/settings', icon: Settings },
-  ];
-
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const closeMenu = () => setIsMenuOpen(false);
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Theme Toggle on the left */}
+          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
             className="p-2 rounded-lg bg-muted hover:bg-accent transition-colors duration-200"
@@ -34,10 +29,10 @@ const Header: React.FC = () => {
             )}
           </button>
 
-          {/* Desktop Navigation - only visible on larger screens */}
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-              How It Works
+            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+              Home
             </Link>
             <Link to="/features" className="text-muted-foreground hover:text-foreground transition-colors">
               Features
@@ -47,7 +42,7 @@ const Header: React.FC = () => {
             </Link>
           </nav>
 
-          {/* Mobile Menu Button - only visible on mobile */}
+          {/* Mobile Menu Button */}
           <button
             onClick={toggleMenu}
             className="p-2 rounded-lg bg-muted hover:bg-accent transition-colors duration-200 md:hidden"
@@ -60,47 +55,50 @@ const Header: React.FC = () => {
             )}
           </button>
         </div>
-      </div>
 
-      {/* Mobile Navigation Overlay */}
-      {isMenuOpen && (
-        <div
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
-          onClick={toggleMenu}
-        />
-      )}
-
-      {/* Mobile Navigation Menu */}
-      <div
-        className={`fixed top-0 right-0 h-full w-80 shadow-2xl z-40 transform transition-all duration-300 md:hidden backdrop-blur-xl border-l-2 ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-        style={{
-          backgroundColor: theme === 'dark' 
-            ? 'rgba(15, 23, 42, 0.98)' 
-            : 'rgba(241, 245, 249, 0.98)',
-          borderColor: theme === 'dark' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)',
-        }}
-      >
-        <div className="p-6 pt-20">
-          <nav className="space-y-2">
-            {menuItems.map((item) => (
+        {/* Mobile Navigation - Simple dropdown instead of overlay */}
+        {isMenuOpen && (
+          <div className="md:hidden mt-4 pb-4 border-t border-border">
+            <nav className="flex flex-col space-y-2 pt-4">
               <Link
-                key={item.path}
-                to={item.path}
-                onClick={toggleMenu}
-                className={`flex items-center space-x-3 p-4 rounded-xl transition-all duration-200 ${
-                  location.pathname === item.path
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'hover:bg-primary/10 text-foreground hover:text-primary'
+                to="/"
+                onClick={closeMenu}
+                className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
+                  location.pathname === '/'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-muted text-foreground'
                 }`}
               >
-                <item.icon className="w-5 h-5" />
-                <span className="font-medium">{item.title}</span>
+                <Home className="w-5 h-5" />
+                <span>Home</span>
               </Link>
-            ))}
-          </nav>
-        </div>
+              <Link
+                to="/features"
+                onClick={closeMenu}
+                className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
+                  location.pathname === '/features'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-muted text-foreground'
+                }`}
+              >
+                <HelpCircle className="w-5 h-5" />
+                <span>Features</span>
+              </Link>
+              <Link
+                to="/settings"
+                onClick={closeMenu}
+                className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
+                  location.pathname === '/settings'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-muted text-foreground'
+                }`}
+              >
+                <Settings className="w-5 h-5" />
+                <span>Settings</span>
+              </Link>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );
