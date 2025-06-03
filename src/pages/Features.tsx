@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Shield, ArrowLeft, Globe, Zap, Lock, Sparkles, Eye, Copy } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -17,11 +16,11 @@ const Features = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
-          <div className="flex items-center mb-4">
+          <div className="flex items-center justify-center md:justify-start mb-4">
             <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-primary mr-2 md:mr-3" />
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold font-brand text-foreground">Features</h1>
           </div>
-          <p className="text-muted-foreground text-sm md:text-base">Discover all the powerful features of Cipher Forge</p>
+          <p className="text-muted-foreground text-sm md:text-base text-center md:text-left">Discover all the powerful features of Cipher Forge</p>
         </div>
 
         {/* Features Grid */}

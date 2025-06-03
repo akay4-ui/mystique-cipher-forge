@@ -1,6 +1,6 @@
-
 import React from 'react';
-import { Lock, Unlock, Shield, Smartphone, Globe, Zap } from 'lucide-react';
+import { Lock, Unlock, Shield, Smartphone, Globe, Zap, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -63,11 +63,17 @@ const HowItWorks = () => {
         <Header />
         
         <div className="max-w-6xl mx-auto px-2 md:px-4 py-4 md:py-8">
-          <div className="mb-8 md:mb-12 text-center">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 font-brand">How It Works</h1>
-            <p className="text-muted-foreground text-sm md:text-base lg:text-lg max-w-3xl mx-auto leading-relaxed">
-              Transform your messages into unbreakable codes with our simple, secure process
-            </p>
+          <div className="mb-8 md:mb-12">
+            <Link to="/" className="inline-flex items-center text-primary hover:text-primary/80 transition-colors duration-300 mb-4 md:mb-6">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Home
+            </Link>
+            <div className="text-center">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 font-brand">How It Works</h1>
+              <p className="text-muted-foreground text-sm md:text-base lg:text-lg max-w-3xl mx-auto leading-relaxed">
+                Transform your messages into unbreakable codes with our simple, secure process
+              </p>
+            </div>
           </div>
 
           {/* Steps Section */}

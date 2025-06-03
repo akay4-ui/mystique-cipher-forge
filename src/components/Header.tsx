@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Sun, Moon, Menu, X, Settings, HelpCircle, Home } from 'lucide-react';
+import { Sun, Moon, Menu, X, Settings, HelpCircle, Home, Shield } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ const Header: React.FC = () => {
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Theme Toggle */}
+          {/* Theme Toggle - Left */}
           <button
             onClick={toggleTheme}
             className="p-2 rounded-lg bg-muted hover:bg-accent transition-colors duration-200"
@@ -29,10 +29,20 @@ const Header: React.FC = () => {
             )}
           </button>
 
-          {/* Desktop Navigation */}
+          {/* Cipher Forge Logo - Center */}
+          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Shield className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+            </div>
+            <h1 className="text-lg md:text-xl lg:text-2xl font-bold font-brand text-foreground">
+              Cipher Forge
+            </h1>
+          </Link>
+
+          {/* Desktop Navigation - Right */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-              Home
+            <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+              How It Works
             </Link>
             <Link to="/features" className="text-muted-foreground hover:text-foreground transition-colors">
               Features
@@ -42,7 +52,7 @@ const Header: React.FC = () => {
             </Link>
           </nav>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Right */}
           <button
             onClick={toggleMenu}
             className="p-2 rounded-lg bg-muted hover:bg-accent transition-colors duration-200 md:hidden"
@@ -56,7 +66,7 @@ const Header: React.FC = () => {
           </button>
         </div>
 
-        {/* Mobile Navigation - Simple dropdown instead of overlay */}
+        {/* Mobile Navigation Dropdown */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-border">
             <nav className="flex flex-col space-y-2 pt-4">
@@ -71,6 +81,18 @@ const Header: React.FC = () => {
               >
                 <Home className="w-5 h-5" />
                 <span>Home</span>
+              </Link>
+              <Link
+                to="/how-it-works"
+                onClick={closeMenu}
+                className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
+                  location.pathname === '/how-it-works'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-muted text-foreground'
+                }`}
+              >
+                <HelpCircle className="w-5 h-5" />
+                <span>How It Works</span>
               </Link>
               <Link
                 to="/features"

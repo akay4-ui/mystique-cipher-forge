@@ -1,7 +1,7 @@
-
 import React from 'react';
-import { Shield, Moon, Sun, Globe, HelpCircle, FileText, Bell, Lock, Palette, Download } from 'lucide-react';
+import { Shield, Moon, Sun, Globe, HelpCircle, FileText, Bell, Lock, Palette, Download, ArrowLeft } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -101,11 +101,17 @@ const Settings = () => {
       <Header />
       
       <div className="max-w-4xl mx-auto px-2 md:px-4 py-4 md:py-8">
-        <div className="mb-6 md:mb-8 text-center md:text-left">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 font-brand">Settings</h1>
-          <p className="text-muted-foreground text-sm md:text-base">
-            Manage your preferences and learn more about Cipher Forge
-          </p>
+        <div className="mb-6 md:mb-8">
+          <Link to="/" className="inline-flex items-center text-primary hover:text-primary/80 transition-colors duration-300 mb-4 md:mb-6">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Link>
+          <div className="text-center md:text-left">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 font-brand">Settings</h1>
+            <p className="text-muted-foreground text-sm md:text-base">
+              Manage your preferences and learn more about Cipher Forge
+            </p>
+          </div>
         </div>
 
         <div className="space-y-4 md:space-y-8">
