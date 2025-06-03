@@ -19,23 +19,6 @@ const MobileNavigation: React.FC = () => {
 
   return (
     <>
-      {/* Menu Button - positioned in top-right */}
-      <button
-        onClick={toggleMenu}
-        className="fixed top-4 right-4 z-50 p-3 rounded-full shadow-xl md:hidden backdrop-blur-md border-2"
-        style={{
-          backgroundColor: theme === 'dark' ? 'rgba(30, 41, 59, 0.95)' : 'rgba(248, 250, 252, 0.95)',
-          borderColor: theme === 'dark' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)',
-        }}
-        aria-label="Menu"
-      >
-        {isMenuOpen ? (
-          <X className="w-5 h-5 text-primary" />
-        ) : (
-          <Menu className="w-5 h-5 text-primary" />
-        )}
-      </button>
-
       {/* Overlay */}
       {isMenuOpen && (
         <div

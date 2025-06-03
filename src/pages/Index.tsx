@@ -7,7 +7,6 @@ import HeroSection from '@/components/HeroSection';
 import EncodingForm from '@/components/EncodingForm';
 import ResultDisplay from '@/components/ResultDisplay';
 import { encodeMessage, decodeMessage } from '@/utils/encodingUtils';
-import { ThemeProvider } from '@/components/ThemeProvider';
 
 const Index = () => {
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
@@ -68,46 +67,44 @@ const Index = () => {
   };
 
   return (
-    <ThemeProvider>
-      <div className="min-h-screen bg-background">
-        <Header />
-        
-        {/* Main App Container - Full width mobile layout */}
-        <div className="max-w-6xl mx-auto px-2 md:px-4 py-4">
-          <HeroSection />
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      {/* Main App Container - Full width mobile layout */}
+      <div className="max-w-6xl mx-auto px-2 md:px-4 py-4">
+        <HeroSection />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-6 items-start">
-            {/* Left Column - Input - Expanded for mobile */}
-            <div className="animate-fade-in">
-              <EncodingForm
-                mode={mode}
-                setMode={setMode}
-                message={message}
-                setMessage={setMessage}
-                password={password}
-                setPassword={setPassword}
-                encodingMethod={encodingMethod}
-                setEncodingMethod={setEncodingMethod}
-                onProcess={handleProcess}
-                onClear={clearAll}
-              />
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-6 items-start">
+          {/* Left Column - Input - Expanded for mobile */}
+          <div className="animate-fade-in">
+            <EncodingForm
+              mode={mode}
+              setMode={setMode}
+              message={message}
+              setMessage={setMessage}
+              password={password}
+              setPassword={setPassword}
+              encodingMethod={encodingMethod}
+              setEncodingMethod={setEncodingMethod}
+              onProcess={handleProcess}
+              onClear={clearAll}
+            />
+          </div>
 
-            {/* Right Column - Result - Expanded for mobile */}
-            <div className="animate-fade-in" style={{animationDelay: '0.1s'}}>
-              <ResultDisplay
-                mode={mode}
-                result={result}
-                encodingMethod={encodingMethod}
-                onCopy={copyToClipboard}
-              />
-            </div>
+          {/* Right Column - Result - Expanded for mobile */}
+          <div className="animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <ResultDisplay
+              mode={mode}
+              result={result}
+              encodingMethod={encodingMethod}
+              onCopy={copyToClipboard}
+            />
           </div>
         </div>
-
-        <Footer />
       </div>
-    </ThemeProvider>
+
+      <Footer />
+    </div>
   );
 };
 
