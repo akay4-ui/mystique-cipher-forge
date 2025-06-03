@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Menu, X, Settings, HelpCircle, FileText, Home } from 'lucide-react';
+import { Menu, X, Settings, HelpCircle, Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from './ThemeProvider';
 
@@ -19,7 +19,7 @@ const MobileNavigation: React.FC = () => {
 
   return (
     <>
-      {/* Menu Button with enhanced styling */}
+      {/* Menu Button - positioned in top-right */}
       <button
         onClick={toggleMenu}
         className="fixed top-4 right-4 z-50 p-3 rounded-full shadow-xl md:hidden backdrop-blur-md border-2"
@@ -44,7 +44,7 @@ const MobileNavigation: React.FC = () => {
         />
       )}
 
-      {/* Side Menu with distinct background */}
+      {/* Side Menu */}
       <div
         className={`fixed top-0 right-0 h-full w-80 shadow-2xl z-40 transform transition-all duration-300 md:hidden backdrop-blur-xl border-l-2 ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'

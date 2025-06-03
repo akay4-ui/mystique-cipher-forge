@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
@@ -24,7 +25,7 @@ const Header: React.FC = () => {
             )}
           </button>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - only visible on larger screens */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
               How It Works
@@ -32,17 +33,17 @@ const Header: React.FC = () => {
             <Link to="/features" className="text-muted-foreground hover:text-foreground transition-colors">
               Features
             </Link>
-            <Link to="/help" className="text-muted-foreground hover:text-foreground transition-colors">
-              Help
+            <Link to="/settings" className="text-muted-foreground hover:text-foreground transition-colors">
+              Settings
             </Link>
           </nav>
 
-          {/* Empty div to maintain spacing */}
+          {/* Empty div to maintain spacing on desktop, mobile menu will overlay */}
           <div className="w-10"></div>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation - only shows hamburger menu on mobile */}
       <MobileNavigation />
     </header>
   );
