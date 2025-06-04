@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useUser } from '@clerk/clerk-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -11,10 +10,13 @@ import ResultDisplay from '@/components/ResultDisplay';
 import SecureVault from '@/components/SecureVault';
 import { encodeMessage, decodeMessage } from '@/utils/encodingUtils';
 import { AdvancedEncryption } from '@/utils/advancedEncryption';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Shield, LogIn } from 'lucide-react';
+import { SignInButton } from '@clerk/clerk-react';
 
 const Index = () => {
-  const { user, loading } = useAuth();
+  const { user, isLoaded } = useUser();
+  const { t } = useLanguage();
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
   const [message, setMessage] = useState('');
   const [password, setPassword] = useState('');
@@ -122,7 +124,7 @@ const Index = () => {
     setResult('');
   };
 
-  if (loading) {
+  if (!isLoaded) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -144,7 +146,7 @@ const Index = () => {
             <div className="flex items-center justify-center mb-4">
               <Shield className="w-8 h-8 text-green-500 mr-2" />
               <h1 className="text-2xl md:text-3xl font-bold text-foreground font-brand">
-                Welcome back, {user.email}
+                Welcome back, {user.emailAddresses[0]?.emailAddress}
               </h1>
             </div>
             <p className="text-muted-foreground">
@@ -197,13 +199,12 @@ const Index = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 Sign in to access our advanced 7-layer encryption system that's virtually unbreakable
               </p>
-              <Link
-                to="/auth"
-                className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                <LogIn className="w-4 h-4 mr-2" />
-                Sign In / Sign Up
-              </Link>
+              <SignInButton mode="modal">
+                <button className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  {t('auth.sign-in')} / {t('auth.sign-up')}
+                </button>
+              </SignInButton>
             </div>
           </div>
 

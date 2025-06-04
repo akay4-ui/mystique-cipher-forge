@@ -1,29 +1,12 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Settings, LogOut, User, Lock } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
+import { Shield, Settings } from 'lucide-react';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Header = () => {
-  const { user, signOut } = useAuth();
-  const { toast } = useToast();
-
-  const handleSignOut = async () => {
-    const { error } = await signOut();
-    if (error) {
-      toast({
-        title: "Sign Out Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Signed Out",
-        description: "You have been successfully signed out.",
-      });
-    }
-  };
+  const { t } = useLanguage();
 
   return (
     <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
@@ -33,7 +16,7 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <Shield className="w-6 h-6 md:w-8 md:h-8 text-primary" />
             <span className="text-lg md:text-xl font-bold text-foreground font-brand">
-              Cipher Forge
+              {t('app.title')}
             </span>
           </Link>
 
@@ -43,59 +26,42 @@ const Header = () => {
               to="/how-it-works"
               className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
             >
-              How It Works
+              {t('nav.how-it-works')}
             </Link>
             <Link
               to="/features"
               className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
             >
-              Features
+              {t('nav.features')}
             </Link>
           </nav>
 
           {/* User Menu */}
           <div className="flex items-center space-x-2">
-            {user ? (
-              <>
-                <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-primary/10 rounded-lg">
-                  <Lock className="w-4 h-4 text-primary" />
-                  <span className="text-sm text-foreground">
-                    {user.email}
-                  </span>
-                </div>
-                
-                <Link
-                  to="/settings"
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
-                >
-                  <Settings className="w-4 h-4 md:w-5 md:h-5" />
-                </Link>
-                
-                <button
-                  onClick={handleSignOut}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
-                >
-                  <LogOut className="w-4 h-4 md:w-5 md:h-5" />
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="flex items-center space-x-1 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted">
+                  <span>{t('auth.sign-in')}</span>
                 </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/auth"
-                  className="flex items-center space-x-1 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
-                >
-                  <User className="w-4 h-4" />
-                  <span className="hidden sm:inline">Sign In</span>
-                </Link>
-                
-                <Link
-                  to="/settings"
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
-                >
-                  <Settings className="w-4 h-4 md:w-5 md:h-5" />
-                </Link>
-              </>
-            )}
+              </SignInButton>
+            </SignedOut>
+            
+            <SignedIn>
+              <UserButton 
+                appearance={{
+                  elements: {
+                    avatarBox: "w-8 h-8"
+                  }
+                }}
+              />
+            </SignedIn>
+            
+            <Link
+              to="/settings"
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+            >
+              <Settings className="w-4 h-4 md:w-5 md:h-5" />
+            </Link>
           </div>
         </div>
       </div>

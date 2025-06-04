@@ -1,22 +1,26 @@
+
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const AnimatedTaglines: React.FC = () => {
+  const { t } = useLanguage();
   const [currentTagline, setCurrentTagline] = useState(0);
   const [currentChar, setCurrentChar] = useState(0);
   const [displayText, setDisplayText] = useState('');
 
   const taglines = [
-    { text: "Universal Language Support", emoji: "🌍" },
-    { text: "200+ Emoji Collection", emoji: "😊" },
-    { text: "Military-Grade Security", emoji: "🛡️" }
+    { key: 'tagline1', emoji: "🌍" },
+    { key: 'tagline2', emoji: "😊" },
+    { key: 'tagline3', emoji: "🛡️" }
   ];
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
+    const currentText = t(taglines[currentTagline].key);
     
-    if (currentChar < taglines[currentTagline].text.length) {
+    if (currentChar < currentText.length) {
       timeout = setTimeout(() => {
-        setDisplayText(prev => prev + taglines[currentTagline].text[currentChar]);
+        setDisplayText(prev => prev + currentText[currentChar]);
         setCurrentChar(prev => prev + 1);
       }, 100);
     } else {
@@ -28,7 +32,7 @@ const AnimatedTaglines: React.FC = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [currentChar, currentTagline]);
+  }, [currentChar, currentTagline, t]);
 
   return (
     <div className="h-12 md:h-14 flex items-center justify-center">
@@ -46,4 +50,3 @@ const AnimatedTaglines: React.FC = () => {
 };
 
 export default AnimatedTaglines;
-
