@@ -9,7 +9,108 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      encryption_keys: {
+        Row: {
+          created_at: string | null
+          encrypted_key: string
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          key_version: number
+          salt: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          encrypted_key: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_version: number
+          salt: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          encrypted_key?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_version?: number
+          salt?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+      secure_messages: {
+        Row: {
+          created_at: string | null
+          encrypted_content: string
+          encryption_method: string
+          hmac: string
+          id: string
+          iv: string
+          key_version: number | null
+          salt: string
+          title: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          encrypted_content: string
+          encryption_method?: string
+          hmac: string
+          id?: string
+          iv: string
+          key_version?: number | null
+          salt: string
+          title: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          encrypted_content?: string
+          encryption_method?: string
+          hmac?: string
+          id?: string
+          iv?: string
+          key_version?: number | null
+          salt?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

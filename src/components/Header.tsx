@@ -1,126 +1,103 @@
 
-import React, { useState } from 'react';
-import { Sun, Moon, Menu, X, Settings, HelpCircle, Home, Shield } from 'lucide-react';
-import { useTheme } from './ThemeProvider';
-import { Link, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Shield, Settings, LogOut, User, Lock } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
-const Header: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
+const Header = () => {
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const closeMenu = () => setIsMenuOpen(false);
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Sign Out Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Signed Out",
+        description: "You have been successfully signed out.",
+      });
+    }
+  };
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          {/* Theme Toggle - Left */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-lg bg-muted hover:bg-accent transition-colors duration-200"
-            aria-label="Toggle theme"
-          >
-            {theme === 'light' ? (
-              <Moon className="w-5 h-5 text-foreground" />
-            ) : (
-              <Sun className="w-5 h-5 text-foreground" />
-            )}
-          </button>
-
-          {/* Cipher Forge Logo - Center */}
+    <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-2 md:px-4">
+        <div className="flex items-center justify-between h-14 md:h-16">
+          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Shield className="w-6 h-6 md:w-8 md:h-8 text-primary" />
-            </div>
-            <h1 className="text-lg md:text-xl lg:text-2xl font-bold font-brand text-foreground">
+            <Shield className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+            <span className="text-lg md:text-xl font-bold text-foreground font-brand">
               Cipher Forge
-            </h1>
+            </span>
           </Link>
 
-          {/* Desktop Navigation - Right */}
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center space-x-1">
+            <Link
+              to="/how-it-works"
+              className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+            >
               How It Works
             </Link>
-            <Link to="/features" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              to="/features"
+              className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+            >
               Features
-            </Link>
-            <Link to="/settings" className="text-muted-foreground hover:text-foreground transition-colors">
-              Settings
             </Link>
           </nav>
 
-          {/* Mobile Menu Button - Right */}
-          <button
-            onClick={toggleMenu}
-            className="p-2 rounded-lg bg-muted hover:bg-accent transition-colors duration-200 md:hidden"
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? (
-              <X className="w-5 h-5 text-foreground" />
+          {/* User Menu */}
+          <div className="flex items-center space-x-2">
+            {user ? (
+              <>
+                <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-primary/10 rounded-lg">
+                  <Lock className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-foreground">
+                    {user.email}
+                  </span>
+                </div>
+                
+                <Link
+                  to="/settings"
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+                >
+                  <Settings className="w-4 h-4 md:w-5 md:h-5" />
+                </Link>
+                
+                <button
+                  onClick={handleSignOut}
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+                >
+                  <LogOut className="w-4 h-4 md:w-5 md:h-5" />
+                </button>
+              </>
             ) : (
-              <Menu className="w-5 h-5 text-foreground" />
+              <>
+                <Link
+                  to="/auth"
+                  className="flex items-center space-x-1 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline">Sign In</span>
+                </Link>
+                
+                <Link
+                  to="/settings"
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+                >
+                  <Settings className="w-4 h-4 md:w-5 md:h-5" />
+                </Link>
+              </>
             )}
-          </button>
-        </div>
-
-        {/* Mobile Navigation Dropdown */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-border">
-            <nav className="flex flex-col space-y-2 pt-4">
-              <Link
-                to="/"
-                onClick={closeMenu}
-                className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
-                  location.pathname === '/'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-muted text-foreground'
-                }`}
-              >
-                <Home className="w-5 h-5" />
-                <span>Home</span>
-              </Link>
-              <Link
-                to="/how-it-works"
-                onClick={closeMenu}
-                className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
-                  location.pathname === '/how-it-works'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-muted text-foreground'
-                }`}
-              >
-                <HelpCircle className="w-5 h-5" />
-                <span>How It Works</span>
-              </Link>
-              <Link
-                to="/features"
-                onClick={closeMenu}
-                className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
-                  location.pathname === '/features'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-muted text-foreground'
-                }`}
-              >
-                <HelpCircle className="w-5 h-5" />
-                <span>Features</span>
-              </Link>
-              <Link
-                to="/settings"
-                onClick={closeMenu}
-                className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
-                  location.pathname === '/settings'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-muted text-foreground'
-                }`}
-              >
-                <Settings className="w-5 h-5" />
-                <span>Settings</span>
-              </Link>
-            </nav>
           </div>
-        )}
+        </div>
       </div>
     </header>
   );
