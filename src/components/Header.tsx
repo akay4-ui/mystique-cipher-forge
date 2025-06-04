@@ -39,7 +39,29 @@ const Header = () => {
           {/* User Menu */}
           <div className="flex items-center space-x-2">
             <SignedOut>
-              <SignInButton mode="modal">
+              <SignInButton 
+                mode="modal"
+                appearance={{
+                  elements: {
+                    modalContent: "sm:max-w-md",
+                    card: "w-full",
+                    rootBox: "w-full",
+                    formButtonPrimary: "w-full bg-primary hover:bg-primary/90 text-primary-foreground",
+                    formFieldInput: "w-full",
+                    socialButtonsBlockButton: "w-full",
+                    dividerLine: "bg-border",
+                    dividerText: "text-muted-foreground text-xs",
+                    formHeaderTitle: "text-foreground",
+                    formHeaderSubtitle: "text-muted-foreground",
+                    socialButtonsProviderIcon: "w-4 h-4",
+                    footer: "hidden"
+                  },
+                  layout: {
+                    socialButtonsVariant: "blockButton",
+                    socialButtonsPlacement: "bottom"
+                  }
+                }}
+              >
                 <button className="flex items-center space-x-1 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted">
                   <span>{t('auth.sign-in')}</span>
                 </button>
@@ -50,7 +72,10 @@ const Header = () => {
               <UserButton 
                 appearance={{
                   elements: {
-                    avatarBox: "w-8 h-8"
+                    avatarBox: "w-8 h-8",
+                    userButtonPopoverCard: "shadow-lg border border-border",
+                    userButtonPopoverActionButton: "text-foreground hover:bg-muted",
+                    userButtonPopoverActionButtonText: "text-foreground"
                   }
                 }}
               />

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { useToast } from '@/hooks/use-toast';
@@ -5,6 +6,7 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import HeroSection from '@/components/HeroSection';
+import AnimatedTaglines from '@/components/AnimatedTaglines';
 import EncodingForm from '@/components/EncodingForm';
 import ResultDisplay from '@/components/ResultDisplay';
 import SecureVault from '@/components/SecureVault';
@@ -188,6 +190,9 @@ const Index = () => {
         // Non-authenticated user interface
         <div className="max-w-6xl mx-auto px-2 md:px-4 py-4">
           <HeroSection />
+          
+          {/* Animated Taglines */}
+          <AnimatedTaglines />
 
           {/* Sign-in prompt */}
           <div className="max-w-2xl mx-auto mb-6">
@@ -199,7 +204,29 @@ const Index = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 Sign in to access our advanced 7-layer encryption system that's virtually unbreakable
               </p>
-              <SignInButton mode="modal">
+              <SignInButton 
+                mode="modal"
+                appearance={{
+                  elements: {
+                    modalContent: "sm:max-w-md",
+                    card: "w-full",
+                    rootBox: "w-full",
+                    formButtonPrimary: "w-full bg-primary hover:bg-primary/90 text-primary-foreground",
+                    formFieldInput: "w-full",
+                    socialButtonsBlockButton: "w-full",
+                    dividerLine: "bg-border",
+                    dividerText: "text-muted-foreground text-xs",
+                    formHeaderTitle: "text-foreground",
+                    formHeaderSubtitle: "text-muted-foreground",
+                    socialButtonsProviderIcon: "w-4 h-4",
+                    footer: "hidden"
+                  },
+                  layout: {
+                    socialButtonsVariant: "blockButton",
+                    socialButtonsPlacement: "bottom"
+                  }
+                }}
+              >
                 <button className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                   <LogIn className="w-4 h-4 mr-2" />
                   {t('auth.sign-in')} / {t('auth.sign-up')}
