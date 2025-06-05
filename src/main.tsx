@@ -53,24 +53,29 @@ createRoot(document.getElementById("root")!).render(
         afterSignOutUrl='/'
         appearance={{
           variables: {
-            colorPrimary: 'hsl(var(--primary))',
-            colorBackground: 'hsl(var(--background))',
-            colorText: 'hsl(var(--foreground))',
-            colorInputBackground: 'hsl(var(--background))',
-            colorInputText: 'hsl(var(--foreground))',
+            colorPrimary: '#2563eb',
+            colorBackground: '#ffffff',
+            colorText: '#0f172a',
+            colorInputBackground: '#ffffff',
+            colorInputText: '#0f172a',
           },
           elements: {
-            formButtonPrimary: 'bg-primary hover:bg-primary/90 text-primary-foreground',
-            card: 'bg-background border border-border',
-            headerTitle: 'text-foreground',
-            headerSubtitle: 'text-muted-foreground',
-            socialButtonsBlockButton: 'border-border hover:bg-muted',
-            formFieldInput: 'border-border bg-background text-foreground',
-            formFieldLabel: 'text-foreground',
-            footerActionText: 'text-muted-foreground',
-            footerActionLink: 'text-primary hover:text-primary/80',
-            identityPreviewText: 'text-foreground',
-            identityPreviewEditButton: 'text-primary'
+            formButtonPrimary: 'bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm',
+            card: 'bg-white border border-gray-200 shadow-lg rounded-lg',
+            headerTitle: 'text-gray-900 font-semibold',
+            headerSubtitle: 'text-gray-600',
+            socialButtonsBlockButton: 'border border-gray-300 hover:bg-gray-50 text-gray-700',
+            formFieldInput: 'border border-gray-300 bg-white text-gray-900 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+            formFieldLabel: 'text-gray-700 font-medium',
+            footerActionText: 'text-gray-500',
+            footerActionLink: 'text-blue-600 hover:text-blue-800 font-medium',
+            identityPreviewText: 'text-gray-900',
+            identityPreviewEditButton: 'text-blue-600 hover:text-blue-800',
+            formFieldSuccessText: 'text-green-600',
+            formFieldErrorText: 'text-red-600',
+            formFieldWarningText: 'text-yellow-600',
+            modalContent: 'bg-white',
+            modalCloseButton: 'text-gray-400 hover:text-gray-600'
           }
         }}
       >
