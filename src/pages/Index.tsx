@@ -1,126 +1,16 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import HeroSection from '@/components/HeroSection';
-import EncodingForm from '@/components/EncodingForm';
-import ResultDisplay from '@/components/ResultDisplay';
+import EncodingInterface from '@/components/EncodingInterface';
 import SecureVault from '@/components/SecureVault';
-import { encodeMessage, decodeMessage } from '@/utils/encodingUtils';
-import { AdvancedEncryption } from '@/utils/advancedEncryption';
 import { Shield, LogIn } from 'lucide-react';
 
 const Index = () => {
   const { user, loading } = useAuth();
-  const [mode, setMode] = useState<'encode' | 'decode'>('encode');
-  const [message, setMessage] = useState('');
-  const [password, setPassword] = useState('');
-  const [result, setResult] = useState('');
-  const [encodingMethod, setEncodingMethod] = useState('text');
-  const [useAdvancedSecurity, setUseAdvancedSecurity] = useState(false);
-  const { toast } = useToast();
-
-  const handleProcess = async () => {
-    if (!message.trim() || !password.trim()) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter both message and password",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    let processedResult;
-    
-    if (useAdvancedSecurity && user) {
-      // Use 7-layer advanced encryption for logged-in users
-      try {
-        if (mode === 'encode') {
-          const encrypted = await AdvancedEncryption.encrypt(message, password);
-          processedResult = encodingMethod === 'emoji' 
-            ? AdvancedEncryption.hideInEmojis(encrypted.encryptedData)
-            : `${encrypted.encryptedData}|${encrypted.salt}|${encrypted.iv}|${encrypted.hmac}`;
-          
-          toast({
-            title: "Advanced Encryption Complete",
-            description: "Message secured with military-grade 7-layer encryption!",
-          });
-        } else {
-          // Decode advanced encryption
-          if (encodingMethod === 'emoji') {
-            const extractedData = AdvancedEncryption.extractFromEmojis(message);
-            const parts = extractedData.split('|');
-            if (parts.length === 4) {
-              processedResult = await AdvancedEncryption.decrypt(parts[0], password, parts[1], parts[2], parts[3]);
-            } else {
-              throw new Error('Invalid encrypted format');
-            }
-          } else {
-            const parts = message.split('|');
-            if (parts.length === 4) {
-              processedResult = await AdvancedEncryption.decrypt(parts[0], password, parts[1], parts[2], parts[3]);
-            } else {
-              throw new Error('Invalid encrypted format');
-            }
-          }
-          
-          toast({
-            title: "Advanced Decryption Complete",
-            description: "Message verified with 7-layer security!",
-          });
-        }
-      } catch (error) {
-        toast({
-          title: "Advanced Encryption Failed",
-          description: "Invalid format or password for advanced encryption",
-          variant: "destructive",
-        });
-        return;
-      }
-    } else {
-      // Use basic encoding for non-logged users or when advanced is disabled
-      if (mode === 'encode') {
-        processedResult = encodeMessage(message, password, encodingMethod);
-        toast({
-          title: "Message Encoded",
-          description: `Successfully encoded using ${encodingMethod} cipher!`,
-        });
-      } else {
-        processedResult = decodeMessage(message, password, encodingMethod);
-        toast({
-          title: "Message Decoded",
-          description: "Your secret message has been revealed!",
-        });
-      }
-    }
-    
-    setResult(processedResult);
-  };
-
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast({
-        title: "Copied!",
-        description: "Text copied to clipboard",
-      });
-    } catch (error) {
-      toast({
-        title: "Copy Failed",
-        description: "Could not copy to clipboard",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const clearAll = () => {
-    setMessage('');
-    setPassword('');
-    setResult('');
-  };
 
   if (loading) {
     return (
@@ -144,43 +34,25 @@ const Index = () => {
             <div className="flex items-center justify-center mb-4">
               <Shield className="w-8 h-8 text-green-500 mr-2" />
               <h1 className="text-2xl md:text-3xl font-bold text-foreground font-brand">
-                Welcome back, {user.email}
+                Welcome back, {user.email?.split('@')[0]}
               </h1>
             </div>
             <p className="text-muted-foreground">
-              You now have access to military-grade 7-layer encryption
+              You now have access to military-grade 7-layer encryption with user fingerprint
             </p>
           </div>
 
-          {/* Security Level Toggle */}
-          <div className="max-w-2xl mx-auto mb-6">
-            <div className="cipher-card">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-foreground">Security Level</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {useAdvancedSecurity 
-                      ? '7-Layer Military-Grade Encryption (Recommended)' 
-                      : 'Basic Encoding (Compatible with non-users)'
-                    }
-                  </p>
-                </div>
-                <button
-                  onClick={() => setUseAdvancedSecurity(!useAdvancedSecurity)}
-                  className={`w-12 h-6 rounded-full transition-colors ${
-                    useAdvancedSecurity ? 'bg-green-500' : 'bg-muted'
-                  } relative`}
-                >
-                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
-                    useAdvancedSecurity ? 'translate-x-6' : 'translate-x-0.5'
-                  }`} />
-                </button>
-              </div>
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Encode/Decode Messages</h2>
+              <EncodingInterface />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Secure Vault</h2>
+              <SecureVault />
             </div>
           </div>
-
-          {/* Secure Vault */}
-          <SecureVault />
         </div>
       ) : (
         // Non-authenticated user interface
@@ -195,7 +67,7 @@ const Index = () => {
                 Unlock Military-Grade Security
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Sign in to access our advanced 7-layer encryption system that's virtually unbreakable
+                Sign in to access our advanced 7-layer encryption system with user fingerprint signature
               </p>
               <Link
                 to="/auth"
@@ -204,33 +76,6 @@ const Index = () => {
                 <LogIn className="w-4 h-4 mr-2" />
                 Sign In / Sign Up
               </Link>
-            </div>
-          </div>
-
-          {/* Basic encoding interface */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-6 items-start">
-            <div className="animate-fade-in">
-              <EncodingForm
-                mode={mode}
-                setMode={setMode}
-                message={message}
-                setMessage={setMessage}
-                password={password}
-                setPassword={setPassword}
-                encodingMethod={encodingMethod}
-                setEncodingMethod={setEncodingMethod}
-                onProcess={handleProcess}
-                onClear={clearAll}
-              />
-            </div>
-
-            <div className="animate-fade-in" style={{animationDelay: '0.1s'}}>
-              <ResultDisplay
-                mode={mode}
-                result={result}
-                encodingMethod={encodingMethod}
-                onCopy={copyToClipboard}
-              />
             </div>
           </div>
         </div>

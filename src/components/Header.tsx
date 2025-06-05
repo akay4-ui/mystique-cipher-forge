@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Settings, LogOut, User, Lock } from 'lucide-react';
+import { Shield, Settings, LogOut, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import UserProfile from '@/components/UserProfile';
 
 const Header = () => {
   const { user, signOut } = useAuth();
@@ -57,12 +58,7 @@ const Header = () => {
           <div className="flex items-center space-x-2">
             {user ? (
               <>
-                <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-primary/10 rounded-lg">
-                  <Lock className="w-4 h-4 text-primary" />
-                  <span className="text-sm text-foreground">
-                    {user.email}
-                  </span>
-                </div>
+                <UserProfile />
                 
                 <Link
                   to="/settings"
