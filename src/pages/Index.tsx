@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
@@ -25,6 +25,11 @@ const Index = () => {
   const [result, setResult] = useState('');
   const [encodingMethod, setEncodingMethod] = useState('text');
   const { toast } = useToast();
+
+  // Add debug logging to understand authentication state
+  useEffect(() => {
+    console.log('Authentication state:', { isLoaded, user: !!user, userId: user?.id });
+  }, [isLoaded, user]);
 
   const handleProcess = async () => {
     if (!user) {
@@ -57,7 +62,7 @@ const Index = () => {
         
         toast({
           title: "Military-Grade Encryption Complete",
-          description: "Message secured with advanced 7-layer encryption!",
+          description: "Message secured with advanced 9-layer encryption!",
         });
 
         // Save to history
@@ -69,7 +74,7 @@ const Index = () => {
           timestamp: new Date().toISOString(),
           messagePreview: message.substring(0, 50) + (message.length > 50 ? '...' : '')
         });
-        localStorage.setItem('cipher_history', JSON.stringify(history.slice(0, 50))); // Keep last 50 entries
+        localStorage.setItem('cipher_history', JSON.stringify(history.slice(0, 50)));
       } else {
         // Decode enhanced encryption
         if (encodingMethod === 'emoji') {
@@ -106,6 +111,7 @@ const Index = () => {
         localStorage.setItem('cipher_history', JSON.stringify(history.slice(0, 50)));
       }
     } catch (error) {
+      console.error('Encryption error:', error);
       toast({
         title: "Encryption Failed",
         description: "Invalid format or password",
@@ -139,12 +145,13 @@ const Index = () => {
     setResult('');
   };
 
+  // Show loading state while Clerk is initializing
   if (!isLoaded) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Shield className="w-8 h-8 text-primary mx-auto mb-4 animate-spin" />
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">Loading Cipher Forge...</p>
         </div>
       </div>
     );
@@ -161,11 +168,11 @@ const Index = () => {
             <div className="flex items-center justify-center mb-4">
               <Shield className="w-8 h-8 text-green-500 mr-2" />
               <h1 className="text-2xl md:text-3xl font-bold text-foreground font-brand">
-                Welcome back, {user.firstName || user.emailAddresses[0]?.emailAddress}
+                Welcome back, {user.firstName || user.emailAddresses[0]?.emailAddress?.split('@')[0]}
               </h1>
             </div>
             <p className="text-muted-foreground">
-              Military-grade 7-layer encryption at your fingertips
+              Military-grade 9-layer encryption at your fingertips
             </p>
           </div>
 
@@ -215,7 +222,7 @@ const Index = () => {
                 Unlock Military-Grade Security
               </h3>
               <p className="text-muted-foreground mb-6">
-                Sign in to access our advanced 7-layer encryption system that's virtually unbreakable. 
+                Sign in to access our advanced 9-layer encryption system that's virtually unbreakable. 
                 Only authenticated users can encode and decode messages.
               </p>
               <SignInButton 
@@ -258,7 +265,7 @@ const Index = () => {
               <div className="cipher-card text-center">
                 <Shield className="w-8 h-8 text-primary mx-auto mb-3" />
                 <h3 className="font-semibold text-foreground mb-2">Military-Grade Encryption</h3>
-                <p className="text-sm text-muted-foreground">7-layer security system with AES-256 encryption</p>
+                <p className="text-sm text-muted-foreground">9-layer security system with AES-256 encryption</p>
               </div>
               <div className="cipher-card text-center">
                 <Lock className="w-8 h-8 text-primary mx-auto mb-3" />
