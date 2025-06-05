@@ -1,4 +1,3 @@
-
 // Enhanced 9-Layer Military-Grade Encryption System
 // Layer 1: Password strengthening (PBKDF2 with high iterations)
 // Layer 2: AES-256-GCM encryption with authenticated encryption
@@ -40,7 +39,7 @@ export class AdvancedEncryption {
       new Date().getTimezoneOffset(),
       canvas.toDataURL(),
       navigator.hardwareConcurrency || 0,
-      navigator.deviceMemory || 0
+      (navigator as any).deviceMemory || 0 // Safe access to experimental API
     ].join('|');
     
     const encoder = new TextEncoder();
