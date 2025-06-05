@@ -1,17 +1,16 @@
-// Enhanced 9-Layer Military-Grade Encryption System
-// Layer 1: Password strengthening (PBKDF2 with high iterations)
-// Layer 2: AES-256-GCM encryption with authenticated encryption
-// Layer 3: Random IV per message (96-bit for GCM)
-// Layer 4: HMAC-SHA-256 authentication for tamper detection
-// Layer 5: Key rotation with time-based entropy
-// Layer 6: Steganography with emoji encoding
-// Layer 7: Zero-knowledge architecture (no server storage)
-// Layer 8: User fingerprinting for additional security
-// Layer 9: Multi-round encryption with different keys
+
+// Advanced 7-Layer Encryption System
+// Layer 1: Password strengthening (PBKDF2)
+// Layer 2: AES-256-GCM encryption
+// Layer 3: Random IV per message
+// Layer 4: HMAC authentication
+// Layer 5: Key rotation
+// Layer 6: Steganography preparation
+// Layer 7: Zero-knowledge architecture
 
 export class AdvancedEncryption {
   private static async generateSalt(): Promise<string> {
-    const array = new Uint8Array(64); // Increased salt size
+    const array = new Uint8Array(32);
     crypto.getRandomValues(array);
     return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
   }
@@ -22,40 +21,12 @@ export class AdvancedEncryption {
     return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
   }
 
-  // Layer 8: Generate user fingerprint for enhanced security
-  private static async generateUserFingerprint(): Promise<string> {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.textBaseline = 'top';
-      ctx.font = '14px Arial';
-      ctx.fillText('User fingerprint test', 2, 2);
-    }
-    
-    const fingerprint = [
-      navigator.userAgent,
-      navigator.language,
-      screen.width + 'x' + screen.height,
-      new Date().getTimezoneOffset(),
-      canvas.toDataURL(),
-      navigator.hardwareConcurrency || 0,
-      (navigator as any).deviceMemory || 0 // Safe access to experimental API
-    ].join('|');
-    
+  // Layer 1: Password strengthening with PBKDF2
+  private static async deriveKey(password: string, salt: string): Promise<CryptoKey> {
     const encoder = new TextEncoder();
-    const data = encoder.encode(fingerprint);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hashBuffer), b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  // Layer 1: Enhanced password strengthening with user fingerprint
-  private static async deriveKey(password: string, salt: string, fingerprint: string): Promise<CryptoKey> {
-    const encoder = new TextEncoder();
-    const enhancedPassword = password + fingerprint + Date.now().toString();
-    
     const keyMaterial = await crypto.subtle.importKey(
       'raw',
-      encoder.encode(enhancedPassword),
+      encoder.encode(password),
       { name: 'PBKDF2' },
       false,
       ['deriveBits', 'deriveKey']
@@ -64,8 +35,8 @@ export class AdvancedEncryption {
     return crypto.subtle.deriveKey(
       {
         name: 'PBKDF2',
-        salt: encoder.encode(salt + fingerprint),
-        iterations: 200000, // Doubled iteration count for enhanced security
+        salt: encoder.encode(salt),
+        iterations: 100000, // High iteration count for security
         hash: 'SHA-256'
       },
       keyMaterial,
@@ -75,84 +46,39 @@ export class AdvancedEncryption {
     );
   }
 
-  // Layer 9: Multi-round encryption
-  private static async multiRoundEncrypt(data: Uint8Array, key: CryptoKey, iv: Uint8Array, rounds: number = 3): Promise<ArrayBuffer> {
-    let encrypted = data.buffer;
-    
-    for (let i = 0; i < rounds; i++) {
-      const roundIv = new Uint8Array(12);
-      crypto.getRandomValues(roundIv);
-      
-      encrypted = await crypto.subtle.encrypt(
-        {
-          name: 'AES-GCM',
-          iv: roundIv
-        },
-        key,
-        encrypted
-      );
-      
-      // Combine round IV with encrypted data
-      const combined = new Uint8Array(roundIv.length + encrypted.byteLength);
-      combined.set(roundIv, 0);
-      combined.set(new Uint8Array(encrypted), roundIv.length);
-      encrypted = combined.buffer;
-    }
-    
-    return encrypted;
-  }
-
-  private static async multiRoundDecrypt(data: ArrayBuffer, key: CryptoKey, rounds: number = 3): Promise<ArrayBuffer> {
-    let decrypted = data;
-    
-    for (let i = 0; i < rounds; i++) {
-      const dataArray = new Uint8Array(decrypted);
-      const roundIv = dataArray.slice(0, 12);
-      const encryptedData = dataArray.slice(12);
-      
-      decrypted = await crypto.subtle.decrypt(
-        {
-          name: 'AES-GCM',
-          iv: roundIv
-        },
-        key,
-        encryptedData
-      );
-    }
-    
-    return decrypted;
-  }
-
-  // Enhanced encryption with all 9 layers
+  // Layer 2: AES-256-GCM encryption with Layer 3: Random IV
   public static async encrypt(message: string, password: string): Promise<{
     encryptedData: string;
     salt: string;
     iv: string;
     hmac: string;
-    fingerprint: string;
   }> {
     const salt = await this.generateSalt();
     const iv = await this.generateIV();
-    const fingerprint = await this.generateUserFingerprint();
-    
-    const key = await this.deriveKey(password, salt, fingerprint);
+    const key = await this.deriveKey(password, salt);
     
     const encoder = new TextEncoder();
     const data = encoder.encode(message);
     
-    // Layer 9: Multi-round AES-256-GCM encryption
-    const ivArray = new Uint8Array(iv.match(/.{2}/g)!.map(byte => parseInt(byte, 16)));
-    const encrypted = await this.multiRoundEncrypt(data, key, ivArray);
+    // AES-256-GCM encryption
+    const encrypted = await crypto.subtle.encrypt(
+      {
+        name: 'AES-GCM',
+        iv: new Uint8Array(iv.match(/.{2}/g)!.map(byte => parseInt(byte, 16)))
+      },
+      key,
+      data
+    );
 
     const encryptedArray = new Uint8Array(encrypted);
     const encryptedData = Array.from(encryptedArray, byte => 
       byte.toString(16).padStart(2, '0')
     ).join('');
 
-    // Layer 4: Enhanced HMAC with fingerprint
+    // Layer 4: Generate HMAC for authentication
     const hmacKey = await crypto.subtle.importKey(
       'raw',
-      encoder.encode(password + salt + fingerprint),
+      encoder.encode(password + salt),
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['sign']
@@ -161,7 +87,7 @@ export class AdvancedEncryption {
     const hmacSignature = await crypto.subtle.sign(
       'HMAC',
       hmacKey,
-      encoder.encode(encryptedData + iv + salt + fingerprint)
+      encoder.encode(encryptedData + iv + salt)
     );
 
     const hmac = Array.from(new Uint8Array(hmacSignature), byte =>
@@ -172,8 +98,7 @@ export class AdvancedEncryption {
       encryptedData,
       salt,
       iv,
-      hmac,
-      fingerprint
+      hmac
     };
   }
 
@@ -182,16 +107,14 @@ export class AdvancedEncryption {
     password: string,
     salt: string,
     iv: string,
-    hmac: string,
-    fingerprint?: string
+    hmac: string
   ): Promise<string> {
     const encoder = new TextEncoder();
-    const currentFingerprint = fingerprint || await this.generateUserFingerprint();
     
-    // Layer 4: Verify HMAC with fingerprint
+    // Layer 4: Verify HMAC first
     const hmacKey = await crypto.subtle.importKey(
       'raw',
-      encoder.encode(password + salt + currentFingerprint),
+      encoder.encode(password + salt),
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['verify']
@@ -202,39 +125,48 @@ export class AdvancedEncryption {
       'HMAC',
       hmacKey,
       hmacArray,
-      encoder.encode(encryptedData + iv + salt + currentFingerprint)
+      encoder.encode(encryptedData + iv + salt)
     );
 
     if (!isValid) {
-      throw new Error('Authentication failed - message may be tampered or accessed from different device');
+      throw new Error('Message authentication failed - data may be tampered');
     }
 
     // Proceed with decryption
-    const key = await this.deriveKey(password, salt, currentFingerprint);
+    const key = await this.deriveKey(password, salt);
     const encryptedArray = new Uint8Array(
       encryptedData.match(/.{2}/g)!.map(byte => parseInt(byte, 16))
     );
+    const ivArray = new Uint8Array(
+      iv.match(/.{2}/g)!.map(byte => parseInt(byte, 16))
+    );
 
-    // Layer 9: Multi-round decryption
-    const decrypted = await this.multiRoundDecrypt(encryptedArray.buffer, key);
+    const decrypted = await crypto.subtle.decrypt(
+      {
+        name: 'AES-GCM',
+        iv: ivArray
+      },
+      key,
+      encryptedArray
+    );
 
     const decoder = new TextDecoder();
     return decoder.decode(decrypted);
   }
 
-  // Enhanced steganography with better emoji mapping
+  // Layer 6: Steganography - Hide text in emoji patterns
   public static hideInEmojis(encryptedData: string): string {
     const emojiMap: { [key: string]: string } = {
       '0': '😀', '1': '😁', '2': '😂', '3': '🤣', '4': '😃',
       '5': '😄', '6': '😅', '7': '😆', '8': '😉', '9': '😊',
-      'a': '😋', 'b': '😎', 'c': '😍', 'd': '😘', 'e': '🥰', 'f': '😗',
-      '|': '🔒' // Special separator
+      'a': '😋', 'b': '😎', 'c': '😍', 'd': '😘', 'e': '🥰',
+      'f': '😗'
     };
     
     return encryptedData
       .toLowerCase()
       .split('')
-      .map(char => emojiMap[char] || '🔐')
+      .map(char => emojiMap[char] || '🔒')
       .join('');
   }
 
@@ -242,8 +174,8 @@ export class AdvancedEncryption {
     const reverseEmojiMap: { [key: string]: string } = {
       '😀': '0', '😁': '1', '😂': '2', '🤣': '3', '😃': '4',
       '😄': '5', '😅': '6', '😆': '7', '😉': '8', '😊': '9',
-      '😋': 'a', '😎': 'b', '😍': 'c', '😘': 'd', '🥰': 'e', '😗': 'f',
-      '🔒': '|' // Special separator
+      '😋': 'a', '😎': 'b', '😍': 'c', '😘': 'd', '🥰': 'e',
+      '😗': 'f'
     };
 
     return Array.from(emojiText)

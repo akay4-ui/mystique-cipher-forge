@@ -1,12 +1,29 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Settings } from 'lucide-react';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { Shield, Settings, LogOut, User, Lock } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 const Header = () => {
-  const { t } = useLanguage();
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Sign Out Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Signed Out",
+        description: "You have been successfully signed out.",
+      });
+    }
+  };
 
   return (
     <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
@@ -16,7 +33,7 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <Shield className="w-6 h-6 md:w-8 md:h-8 text-primary" />
             <span className="text-lg md:text-xl font-bold text-foreground font-brand">
-              {t('app.title')}
+              Cipher Forge
             </span>
           </Link>
 
@@ -26,67 +43,59 @@ const Header = () => {
               to="/how-it-works"
               className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
             >
-              {t('nav.how-it-works')}
+              How It Works
             </Link>
             <Link
               to="/features"
               className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
             >
-              {t('nav.features')}
+              Features
             </Link>
           </nav>
 
           {/* User Menu */}
           <div className="flex items-center space-x-2">
-            <SignedOut>
-              <SignInButton 
-                mode="modal"
-                appearance={{
-                  elements: {
-                    modalContent: "sm:max-w-md",
-                    card: "w-full",
-                    rootBox: "w-full",
-                    formButtonPrimary: "w-full bg-primary hover:bg-primary/90 text-primary-foreground",
-                    formFieldInput: "w-full",
-                    socialButtonsBlockButton: "w-full",
-                    dividerLine: "bg-border",
-                    dividerText: "text-muted-foreground text-xs",
-                    formHeaderTitle: "text-foreground",
-                    formHeaderSubtitle: "text-muted-foreground",
-                    socialButtonsProviderIcon: "w-4 h-4",
-                    footer: "hidden"
-                  },
-                  layout: {
-                    socialButtonsVariant: "blockButton",
-                    socialButtonsPlacement: "bottom"
-                  }
-                }}
-              >
-                <button className="flex items-center space-x-1 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted">
-                  <span>{t('auth.sign-in')}</span>
+            {user ? (
+              <>
+                <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-primary/10 rounded-lg">
+                  <Lock className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-foreground">
+                    {user.email}
+                  </span>
+                </div>
+                
+                <Link
+                  to="/settings"
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+                >
+                  <Settings className="w-4 h-4 md:w-5 md:h-5" />
+                </Link>
+                
+                <button
+                  onClick={handleSignOut}
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+                >
+                  <LogOut className="w-4 h-4 md:w-5 md:h-5" />
                 </button>
-              </SignInButton>
-            </SignedOut>
-            
-            <SignedIn>
-              <UserButton 
-                appearance={{
-                  elements: {
-                    avatarBox: "w-8 h-8",
-                    userButtonPopoverCard: "shadow-lg border border-border",
-                    userButtonPopoverActionButton: "text-foreground hover:bg-muted",
-                    userButtonPopoverActionButtonText: "text-foreground"
-                  }
-                }}
-              />
-            </SignedIn>
-            
-            <Link
-              to="/settings"
-              className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
-            >
-              <Settings className="w-4 h-4 md:w-5 md:h-5" />
-            </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/auth"
+                  className="flex items-center space-x-1 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline">Sign In</span>
+                </Link>
+                
+                <Link
+                  to="/settings"
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+                >
+                  <Settings className="w-4 h-4 md:w-5 md:h-5" />
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
