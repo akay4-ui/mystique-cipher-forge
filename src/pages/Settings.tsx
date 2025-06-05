@@ -1,16 +1,36 @@
-
 import React from 'react';
-import { Shield, Moon, Sun, Globe, HelpCircle, FileText, Bell, Lock, Palette, Download, ArrowLeft, ChevronDown } from 'lucide-react';
+import { Shield, Moon, Sun, Globe, HelpCircle, FileText, Bell, Lock, Palette, Download, ArrowLeft, ChevronDown, History, Trash2, Clock } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useUser } from '@clerk/clerk-react';
 
 const Settings = () => {
   const { theme, toggleTheme } = useTheme();
   const { currentLanguage, languages, changeLanguage, t } = useLanguage();
+  const { user } = useUser();
   const [showLanguages, setShowLanguages] = React.useState(false);
+  const [showHistory, setShowHistory] = React.useState(false);
+
+  // Get encryption history
+  const [history, setHistory] = React.useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('cipher_history') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  const clearHistory = () => {
+    localStorage.removeItem('cipher_history');
+    setHistory([]);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString();
+  };
 
   const settingsSections = [
     {
@@ -38,6 +58,23 @@ const Settings = () => {
         },
       ],
     },
+    ...(user ? [{
+      title: 'History',
+      items: [
+        {
+          icon: History,
+          title: 'Encryption History',
+          description: `${history.length} encryption/decoding operations recorded`,
+          customAction: () => setShowHistory(!showHistory),
+        },
+        {
+          icon: Trash2,
+          title: 'Clear History',
+          description: 'Remove all encryption history records',
+          action: clearHistory,
+        },
+      ],
+    }] : []),
     {
       title: 'Security & Privacy',
       items: [
@@ -56,7 +93,7 @@ const Settings = () => {
         {
           icon: Download,
           title: 'Export Data',
-          description: 'Download your encoding history (when available)',
+          description: 'Download your encryption history (when available)',
         },
       ],
     },
@@ -191,6 +228,37 @@ const Settings = () => {
                               <span className="text-sm">{lang.name}</span>
                             </button>
                           ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* History Dropdown */}
+                    {item.title === 'Encryption History' && showHistory && (
+                      <div className="mt-2 p-4 bg-muted rounded-lg">
+                        <div className="space-y-3 max-h-64 overflow-y-auto">
+                          {history.length === 0 ? (
+                            <p className="text-center text-muted-foreground py-4">No encryption history yet</p>
+                          ) : (
+                            history.map((entry: any) => (
+                              <div key={entry.id} className="flex items-center justify-between p-3 bg-background rounded-lg">
+                                <div className="flex items-center space-x-3">
+                                  <div className={`p-2 rounded-full ${entry.type === 'encode' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'}`}>
+                                    {entry.type === 'encode' ? <Lock className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-foreground">
+                                      {entry.type === 'encode' ? 'Encoded' : 'Decoded'} - {entry.method}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">{entry.messagePreview}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center text-xs text-muted-foreground">
+                                  <Clock className="w-3 h-3 mr-1" />
+                                  {formatDate(entry.timestamp)}
+                                </div>
+                              </div>
+                            ))
+                          )}
                         </div>
                       </div>
                     )}
