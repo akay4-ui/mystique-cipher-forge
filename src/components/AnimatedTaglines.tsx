@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 
 const AnimatedTaglines: React.FC = () => {
@@ -46,4 +47,3 @@ const AnimatedTaglines: React.FC = () => {
 };
 
 export default AnimatedTaglines;
-

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import AnimatedTaglines from './AnimatedTaglines';
 
 const HeroSection: React.FC = () => {
   return (
@@ -8,10 +9,12 @@ const HeroSection: React.FC = () => {
         Transform your messages into unbreakable secret codes
       </p>
       
-      <div className="flex items-center justify-center space-x-2 mb-4">
+      <AnimatedTaglines />
+      
+      <div className="flex items-center justify-center space-x-2 mb-4 mt-4">
         <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
         <span className="text-xs md:text-sm text-muted-foreground font-medium">
-          Universal Language Support
+          Advanced 7-Layer Encryption Active
         </span>
       </div>
     </div>
