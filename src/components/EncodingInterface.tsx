@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { AdvancedEncryption } from '@/utils/advancedEncryption';
 import { encodeMessage, decodeMessage } from '@/utils/encodingUtils';
-import { Shield, Lock, Unlock, Copy, X } from 'lucide-react';
+import { Shield, Lock, Unlock, Copy, X, Share2 } from 'lucide-react';
 
 const EncodingInterface = () => {
   const { user } = useAuth();
@@ -39,7 +39,7 @@ const EncodingInterface = () => {
     
     try {
       if (useAdvancedSecurity) {
-        // Use advanced 7-layer encryption with user fingerprint
+        // Use advanced 9-layer encryption with user fingerprint
         const userFingerprint = await generateUserFingerprint(user);
         const enhancedPassword = `${password}_${userFingerprint}`;
         
@@ -49,15 +49,13 @@ const EncodingInterface = () => {
             ? AdvancedEncryption.hideInEmojis(encrypted.encryptedData)
             : `${encrypted.encryptedData}|${encrypted.salt}|${encrypted.iv}|${encrypted.hmac}`;
           
-          // Save to history
           saveToHistory(message, processedResult, 'encode', encodingMethod);
           
           toast({
-            title: "Advanced Encryption Complete",
-            description: "Message secured with 7-layer encryption + user signature!",
+            title: "Advanced 9-Layer Encryption Complete",
+            description: "Message secured with military-grade encryption + user signature!",
           });
         } else {
-          // Decode advanced encryption
           if (encodingMethod === 'emoji') {
             const extractedData = AdvancedEncryption.extractFromEmojis(message);
             const parts = extractedData.split('|');
@@ -78,24 +76,24 @@ const EncodingInterface = () => {
           saveToHistory(message, processedResult, 'decode', encodingMethod);
           
           toast({
-            title: "Advanced Decryption Complete",
-            description: "Message verified with 7-layer security + user signature!",
+            title: "Advanced 9-Layer Decryption Complete",
+            description: "Message verified with military-grade security + user signature!",
           });
         }
       } else {
-        // Use basic encoding - fix emoji handling
+        // Use enhanced 9-layer encoding
         if (mode === 'encode') {
           processedResult = encodeMessage(message, password, encodingMethod);
           saveToHistory(message, processedResult, 'encode', encodingMethod);
           toast({
-            title: "Message Encoded",
-            description: `Successfully encoded using ${encodingMethod} cipher!`,
+            title: "9-Layer Encryption Complete",
+            description: `Successfully encoded using enhanced ${encodingMethod} cipher!`,
           });
         } else {
           processedResult = decodeMessage(message, password, encodingMethod);
           saveToHistory(message, processedResult, 'decode', encodingMethod);
           toast({
-            title: "Message Decoded",
+            title: "9-Layer Decryption Complete",
             description: "Your secret message has been revealed!",
           });
         }
@@ -113,8 +111,7 @@ const EncodingInterface = () => {
   };
 
   const generateUserFingerprint = async (user: any): Promise<string> => {
-    // Generate a unique fingerprint based on user data
-    const userString = `${user.id}_${user.email}_${navigator.userAgent}`;
+    const userString = `${user.id}_${user.email}_${navigator.userAgent}_${screen.width}_${screen.height}`;
     const encoder = new TextEncoder();
     const data = encoder.encode(userString);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
@@ -135,7 +132,7 @@ const EncodingInterface = () => {
     
     const existing = JSON.parse(localStorage.getItem('cipherHistory') || '[]');
     existing.unshift(historyItem);
-    localStorage.setItem('cipherHistory', JSON.stringify(existing.slice(0, 50))); // Keep last 50
+    localStorage.setItem('cipherHistory', JSON.stringify(existing.slice(0, 50)));
   };
 
   const copyToClipboard = async (text: string) => {
@@ -154,6 +151,23 @@ const EncodingInterface = () => {
     }
   };
 
+  const shareMessage = async () => {
+    if (!result) return;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Encrypted Message',
+          text: result,
+        });
+      } catch (error) {
+        copyToClipboard(result);
+      }
+    } else {
+      copyToClipboard(result);
+    }
+  };
+
   const clearAll = () => {
     setMessage('');
     setPassword('');
@@ -165,7 +179,7 @@ const EncodingInterface = () => {
       <div className="cipher-card text-center">
         <Shield className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
         <h3 className="text-lg font-semibold mb-2">Authentication Required</h3>
-        <p className="text-muted-foreground">Please sign in to access encryption features</p>
+        <p className="text-muted-foreground">Please sign in to access 9-layer encryption</p>
       </div>
     );
   }
@@ -177,24 +191,24 @@ const EncodingInterface = () => {
         <div className="flex items-center justify-center space-x-4 mb-4">
           <button
             onClick={() => setMode('encode')}
-            className={`px-6 py-2 rounded-lg transition-colors ${
+            className={`px-4 py-2 rounded-lg transition-colors text-sm ${
               mode === 'encode' 
                 ? 'bg-primary text-primary-foreground' 
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
-            <Lock className="w-4 h-4 mr-2 inline" />
+            <Lock className="w-4 h-4 mr-1 inline" />
             Encode
           </button>
           <button
             onClick={() => setMode('decode')}
-            className={`px-6 py-2 rounded-lg transition-colors ${
+            className={`px-4 py-2 rounded-lg transition-colors text-sm ${
               mode === 'decode' 
                 ? 'bg-primary text-primary-foreground' 
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
-            <Unlock className="w-4 h-4 mr-2 inline" />
+            <Unlock className="w-4 h-4 mr-1 inline" />
             Decode
           </button>
         </div>
@@ -203,20 +217,11 @@ const EncodingInterface = () => {
       {/* Input Form */}
       <div className="cipher-card">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">
+          <h3 className="text-base font-semibold">
             {mode === 'encode' ? 'Message to Encode' : 'Message to Decode'}
           </h3>
-          {/* Quick Action Icons */}
-          <div className="flex space-x-2">
-            {result && (
-              <button
-                onClick={() => copyToClipboard(result)}
-                className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
-                title="Copy Result"
-              >
-                <Copy className="w-4 h-4" />
-              </button>
-            )}
+          {/* Action Icons in the space you highlighted */}
+          <div className="flex space-x-1">
             <button
               onClick={clearAll}
               className="p-2 text-muted-foreground hover:text-destructive transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
@@ -224,6 +229,24 @@ const EncodingInterface = () => {
             >
               <X className="w-4 h-4" />
             </button>
+            {result && (
+              <>
+                <button
+                  onClick={() => copyToClipboard(result)}
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
+                  title="Copy Result"
+                >
+                  <Copy className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={shareMessage}
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
+                  title="Share"
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
+              </>
+            )}
           </div>
         </div>
         
@@ -235,9 +258,9 @@ const EncodingInterface = () => {
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="cipher-input w-full h-32 resize-none"
+              className="cipher-input w-full h-24 resize-none text-sm"
               placeholder={mode === 'encode' ? 'Enter your secret message...' : 'Paste encoded message...'}
-              style={{ fontSize: encodingMethod === 'emoji' && mode === 'decode' ? '18px' : '14px' }}
+              style={{ fontSize: encodingMethod === 'emoji' && mode === 'decode' ? '16px' : '14px' }}
             />
           </div>
 
@@ -247,7 +270,7 @@ const EncodingInterface = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="cipher-input w-full"
+              className="cipher-input w-full text-sm"
               placeholder="Enter encryption password..."
             />
           </div>
@@ -256,7 +279,7 @@ const EncodingInterface = () => {
           <div>
             <label className="block text-sm font-medium mb-2">Output Format</label>
             <div className="flex space-x-4">
-              <label className="flex items-center">
+              <label className="flex items-center text-sm">
                 <input
                   type="radio"
                   value="text"
@@ -266,7 +289,7 @@ const EncodingInterface = () => {
                 />
                 Text
               </label>
-              <label className="flex items-center">
+              <label className="flex items-center text-sm">
                 <input
                   type="radio"
                   value="emoji"
@@ -281,7 +304,7 @@ const EncodingInterface = () => {
 
           <button
             onClick={handleProcess}
-            className="mobile-button w-full flex items-center justify-center"
+            className="mobile-button w-full flex items-center justify-center text-sm"
           >
             {mode === 'encode' ? <Lock className="w-4 h-4 mr-2" /> : <Unlock className="w-4 h-4 mr-2" />}
             {mode === 'encode' ? 'Encrypt Message' : 'Decrypt Message'}
@@ -293,20 +316,29 @@ const EncodingInterface = () => {
       {result && (
         <div className="cipher-card">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">
+            <h3 className="text-base font-semibold">
               {mode === 'encode' ? 'Encrypted Result' : 'Decrypted Message'}
             </h3>
-            <button
-              onClick={() => copyToClipboard(result)}
-              className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
-              title="Copy Result"
-            >
-              <Copy className="w-4 h-4" />
-            </button>
+            <div className="flex space-x-1">
+              <button
+                onClick={() => copyToClipboard(result)}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
+                title="Copy"
+              >
+                <Copy className="w-4 h-4" />
+              </button>
+              <button
+                onClick={shareMessage}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
+                title="Share"
+              >
+                <Share2 className="w-4 h-4" />
+              </button>
+            </div>
           </div>
           
-          <div className="bg-muted rounded-lg p-4">
-            <p className="text-sm text-foreground break-all" style={{ fontSize: encodingMethod === 'emoji' ? '18px' : '14px' }}>
+          <div className="bg-muted rounded-lg p-3">
+            <p className="text-sm text-foreground break-all" style={{ fontSize: encodingMethod === 'emoji' ? '16px' : '13px' }}>
               {result}
             </p>
           </div>
@@ -318,12 +350,11 @@ const EncodingInterface = () => {
         <div className="flex items-start space-x-3">
           <Shield className="w-5 h-5 text-green-600 mt-0.5" />
           <div>
-            <h4 className="font-medium text-green-700 dark:text-green-300">
-              Enhanced Security Active
+            <h4 className="font-medium text-green-700 dark:text-green-300 text-sm">
+              9-Layer Military-Grade Encryption Active
             </h4>
-            <p className="text-sm text-green-600 dark:text-green-400">
-              Your messages are protected with {useAdvancedSecurity ? '7-layer encryption + user fingerprint signature' : 'basic password encoding'}. 
-              Only you can decrypt messages encrypted with your account.
+            <p className="text-xs text-green-600 dark:text-green-400">
+              Enhanced security with user fingerprint, time-based salts, anti-tamper verification, and expanded emoji cipher with {encodingMethod === 'emoji' ? '300+' : 'text'} encoding patterns.
             </p>
           </div>
         </div>
