@@ -46,15 +46,27 @@ export const encodeWithEmojis = (text: string): string => {
   console.log('🚀 9-Layer Emoji encoding initiated for:', text.substring(0, 20) + '...');
   
   try {
-    // Convert hex string to emojis
-    const hexPairs = text.match(/.{2}/g);
+    if (!text || text.trim() === '') {
+      return 'Empty text provided';
+    }
+
+    // Ensure we're working with valid hex string
+    const cleanHex = text.replace(/[^0-9a-fA-F]/g, '');
+    if (cleanHex.length % 2 !== 0) {
+      return 'Invalid hex format - odd length';
+    }
+
+    const hexPairs = cleanHex.match(/.{2}/g);
     if (!hexPairs) {
       return 'Invalid hex format';
     }
     
     let encoded = '';
     for (const hexPair of hexPairs) {
-      const byteValue = parseInt(hexPair, 16); // Convert hex to decimal (0-255)
+      const byteValue = parseInt(hexPair, 16);
+      if (isNaN(byteValue)) {
+        return 'Invalid hex characters detected';
+      }
       const emojiIndex = byteValue % emojiSet.length;
       encoded += emojiSet[emojiIndex];
     }
@@ -63,7 +75,7 @@ export const encodeWithEmojis = (text: string): string => {
     return encoded;
   } catch (error) {
     console.error('❌ 9-Layer emoji encoding failed:', error);
-    return 'Encoding failed';
+    return 'Encoding failed: ' + (error instanceof Error ? error.message : 'Unknown error');
   }
 };
 
@@ -116,13 +128,14 @@ export const applyPasswordEncoding = (text: string, key: string): string => {
     // Convert to base64 first for safe processing
     const base64Text = btoa(unescape(encodeURIComponent(enhancedText)));
     
-    let encoded = '';
-    const textArray = Array.from(base64Text);
+    let currentData = base64Text;
     const keyArray = Array.from(key);
     
     // 9-layer encoding with multiple rounds
     for (let round = 0; round < 9; round++) {
-      encoded = '';
+      let encoded = '';
+      const textArray = Array.from(currentData);
+      
       for (let i = 0; i < textArray.length; i++) {
         const textChar = textArray[i].charCodeAt(0);
         const keyChar = keyArray[i % keyArray.length].charCodeAt(0);
@@ -131,15 +144,15 @@ export const applyPasswordEncoding = (text: string, key: string): string => {
         const encodedChar = encodedValue.toString(16).padStart(2, '0'); // Convert to hex
         encoded += encodedChar;
       }
-      textArray.length = 0;
-      textArray.push(...encoded.match(/.{2}/g)?.map(hex => String.fromCharCode(parseInt(hex, 16))) || []);
+      
+      currentData = encoded;
     }
     
     console.log('✅ 9-Layer password encoding complete');
-    return encoded;
+    return currentData;
   } catch (error) {
     console.error('❌ 9-Layer password encoding failed:', error);
-    return 'Password encoding failed';
+    return 'Password encoding failed: ' + (error instanceof Error ? error.message : 'Unknown error');
   }
 };
 
@@ -153,52 +166,57 @@ export const applyPasswordDecoding = (encodedText: string, key: string): string 
     }
 
     // Validate hex format
-    if (!/^[0-9a-fA-F]+$/.test(encodedText) || encodedText.length % 2 !== 0) {
+    const cleanHex = encodedText.replace(/[^0-9a-fA-F]/g, '');
+    if (!/^[0-9a-fA-F]+$/.test(cleanHex) || cleanHex.length % 2 !== 0) {
       return 'Invalid hex format';
     }
 
-    let textArray = encodedText.match(/.{2}/g)?.map(hex => String.fromCharCode(parseInt(hex, 16))) || [];
+    let currentData = cleanHex;
     const keyArray = Array.from(key);
     
     // Reverse the 9-layer encoding process
     for (let round = 8; round >= 0; round--) {
+      const hexPairs = currentData.match(/.{2}/g);
+      if (!hexPairs) {
+        return 'Invalid hex data in round ' + (8 - round + 1);
+      }
+      
       let original = '';
-      for (let i = 0; i < textArray.length; i++) {
-        const encodedChar = textArray[i].charCodeAt(0);
+      for (let i = 0; i < hexPairs.length; i++) {
+        const encodedChar = parseInt(hexPairs[i], 16);
+        if (isNaN(encodedChar)) {
+          return 'Invalid hex character in round ' + (8 - round + 1);
+        }
+        
         const keyChar = keyArray[i % keyArray.length].charCodeAt(0);
         const saltValue = (i + round + 1) * 17;
         const originalValue = (encodedChar - keyChar - saltValue + 256) % 256;
         original += String.fromCharCode(originalValue);
       }
       
-      // Convert back to hex for next iteration (except last)
-      if (round > 0) {
-        const hexString = Array.from(original).map(char => 
-          char.charCodeAt(0).toString(16).padStart(2, '0')
-        ).join('');
-        textArray = hexString.match(/.{2}/g)?.map(hex => String.fromCharCode(parseInt(hex, 16))) || [];
-      } else {
-        textArray = Array.from(original);
-      }
+      currentData = original;
     }
     
-    const result = textArray.join('');
-    
     // Decode from base64
-    const decodedBase64 = decodeURIComponent(escape(atob(result)));
-    
-    // Layer 9: Verify anti-tamper header
-    const parts = decodedBase64.split(':');
-    if (parts.length === 3 && parts[0] === parts[2]) {
-      console.log('✅ 9-Layer password decoding complete with verification');
-      return parts[1]; // Return the original message
-    } else {
-      console.error('❌ Anti-tamper verification failed');
-      return 'Message integrity verification failed';
+    try {
+      const decodedBase64 = decodeURIComponent(escape(atob(currentData)));
+      
+      // Layer 9: Verify anti-tamper header
+      const parts = decodedBase64.split(':');
+      if (parts.length === 3 && parts[0] === parts[2]) {
+        console.log('✅ 9-Layer password decoding complete with verification');
+        return parts[1]; // Return the original message
+      } else {
+        console.error('❌ Anti-tamper verification failed');
+        return 'Message integrity verification failed';
+      }
+    } catch (decodeError) {
+      console.error('❌ Base64 decode failed:', decodeError);
+      return 'Invalid message format or wrong password';
     }
   } catch (error) {
     console.error('❌ 9-Layer password decoding failed:', error);
-    return 'Invalid message or wrong password';
+    return 'Invalid message or wrong password: ' + (error instanceof Error ? error.message : 'Unknown error');
   }
 };
 
@@ -224,7 +242,7 @@ export const encodeMessage = (text: string, key: string, method: string): string
     return passwordEncoded;
   } catch (error) {
     console.error('❌ 9-Layer encoding failed:', error);
-    return 'Encoding failed';
+    return 'Encoding failed: ' + (error instanceof Error ? error.message : 'Unknown error');
   }
 };
 
@@ -235,7 +253,7 @@ export const decodeMessage = (encodedText: string, key: string, method: string):
   console.log('🔓 Initiating 9-Layer decryption system');
   
   try {
-    let hexData = encodedText;
+    let hexData = encodedText.trim();
     
     if (method === 'emoji') {
       // Decode from emojis to hex first
@@ -246,9 +264,10 @@ export const decodeMessage = (encodedText: string, key: string, method: string):
     }
     
     // Apply password decoding
-    return applyPasswordDecoding(hexData, key);
+    const result = applyPasswordDecoding(hexData, key);
+    return result;
   } catch (error) {
     console.error('❌ 9-Layer decoding failed:', error);
-    return 'Invalid message or wrong password';
+    return 'Invalid message or wrong password: ' + (error instanceof Error ? error.message : 'Unknown error');
   }
 };

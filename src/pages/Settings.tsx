@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shield, Moon, Sun, Globe, HelpCircle, FileText, Bell, Lock, Palette, Download, ArrowLeft, History, Trash2, Settings as SettingsIcon } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,10 +11,39 @@ import { Switch } from '@/components/ui/switch';
 const Settings = () => {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
-  const [useAdvancedSecurity, setUseAdvancedSecurity] = useState(true);
+  const [useAdvancedSecurity, setUseAdvancedSecurity] = useState(false);
   const [autoDeleteHistory, setAutoDeleteHistory] = useState(false);
   const [showNotifications, setShowNotifications] = useState(true);
   const [showHistory, setShowHistory] = useState(false);
+
+  // Load settings from localStorage
+  useEffect(() => {
+    const advancedSecurity = localStorage.getItem('useAdvancedSecurity') === 'true';
+    const autoDelete = localStorage.getItem('autoDeleteHistory') === 'true';
+    const notifications = localStorage.getItem('showNotifications') !== 'false';
+    
+    setUseAdvancedSecurity(advancedSecurity);
+    setAutoDeleteHistory(autoDelete);
+    setShowNotifications(notifications);
+  }, []);
+
+  const handleAdvancedSecurityToggle = () => {
+    const newValue = !useAdvancedSecurity;
+    setUseAdvancedSecurity(newValue);
+    localStorage.setItem('useAdvancedSecurity', newValue.toString());
+  };
+
+  const handleAutoDeleteToggle = () => {
+    const newValue = !autoDeleteHistory;
+    setAutoDeleteHistory(newValue);
+    localStorage.setItem('autoDeleteHistory', newValue.toString());
+  };
+
+  const handleNotificationsToggle = () => {
+    const newValue = !showNotifications;
+    setShowNotifications(newValue);
+    localStorage.setItem('showNotifications', newValue.toString());
+  };
 
   const allSettings = [
     // Theme & Interface
@@ -34,7 +62,7 @@ const Settings = () => {
       description: 'Get notified about encoding/decoding completion',
       toggle: true,
       value: showNotifications,
-      action: () => setShowNotifications(!showNotifications),
+      action: handleNotificationsToggle,
       category: 'interface'
     },
     {
@@ -49,11 +77,11 @@ const Settings = () => {
     ...(user ? [
       {
         icon: Shield,
-        title: '7-Layer Encryption',
-        description: 'Use military-grade encryption with user fingerprint signature (Recommended)',
+        title: 'Advanced Military-Grade Security',
+        description: 'Use 9-layer encryption with AES-256-GCM, user fingerprint signature, and HMAC-SHA512 authentication (Recommended)',
         toggle: true,
         value: useAdvancedSecurity,
-        action: () => setUseAdvancedSecurity(!useAdvancedSecurity),
+        action: handleAdvancedSecurityToggle,
         category: 'security'
       },
       {
@@ -62,7 +90,7 @@ const Settings = () => {
         description: 'Automatically clear messages after encoding/decoding',
         toggle: true,
         value: autoDeleteHistory,
-        action: () => setAutoDeleteHistory(!autoDeleteHistory),
+        action: handleAutoDeleteToggle,
         category: 'security'
       },
       {
@@ -92,7 +120,7 @@ const Settings = () => {
     {
       icon: Palette,
       title: 'Version',
-      description: 'Cipher Forge v2.1.0 - Enhanced with user fingerprint',
+      description: 'Cipher Forge v2.1.0 - Enhanced with 9-layer encryption',
       info: true,
       category: 'about'
     },

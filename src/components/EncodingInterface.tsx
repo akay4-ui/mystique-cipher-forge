@@ -14,7 +14,11 @@ const EncodingInterface = () => {
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
   const [encodingMethod, setEncodingMethod] = useState('text');
-  const [useAdvancedSecurity, setUseAdvancedSecurity] = useState(false);
+
+  // Get advanced security setting from localStorage
+  const getAdvancedSecuritySetting = () => {
+    return localStorage.getItem('useAdvancedSecurity') === 'true';
+  };
 
   const handleProcess = async () => {
     if (!message.trim() || !password.trim()) {
@@ -36,6 +40,7 @@ const EncodingInterface = () => {
     }
 
     let processedResult;
+    const useAdvancedSecurity = getAdvancedSecuritySetting();
     
     try {
       if (useAdvancedSecurity) {
@@ -45,54 +50,60 @@ const EncodingInterface = () => {
         
         if (mode === 'encode') {
           const encrypted = await AdvancedEncryption.encrypt(message, enhancedPassword);
+          const combinedData = `${encrypted.encryptedData}|${encrypted.salt}|${encrypted.iv}|${encrypted.hmac}`;
+          
           processedResult = encodingMethod === 'emoji' 
-            ? AdvancedEncryption.hideInEmojis(`${encrypted.encryptedData}|${encrypted.salt}|${encrypted.iv}|${encrypted.hmac}`)
-            : `${encrypted.encryptedData}|${encrypted.salt}|${encrypted.iv}|${encrypted.hmac}`;
+            ? AdvancedEncryption.hideInEmojis(combinedData)
+            : combinedData;
           
           saveToHistory(message, processedResult, 'encode', encodingMethod);
           
           toast({
             title: "Advanced 9-Layer Encryption Complete",
-            description: "Message secured with military-grade encryption + user signature!",
+            description: "Message secured with military-grade encryption!",
           });
         } else {
-          let dataToDecrypt = message;
+          let dataToDecrypt = message.trim();
           
           if (encodingMethod === 'emoji') {
             dataToDecrypt = AdvancedEncryption.extractFromEmojis(message);
           }
           
           const parts = dataToDecrypt.split('|');
-          if (parts.length === 4) {
-            processedResult = await AdvancedEncryption.decrypt(parts[0], enhancedPassword, parts[1], parts[2], parts[3]);
-          } else {
-            throw new Error('Invalid encrypted format - expected 4 parts separated by |');
+          if (parts.length !== 4) {
+            throw new Error('Invalid encrypted format - data may be corrupted');
           }
+          
+          processedResult = await AdvancedEncryption.decrypt(parts[0], enhancedPassword, parts[1], parts[2], parts[3]);
           
           saveToHistory(message, processedResult, 'decode', encodingMethod);
           
           toast({
             title: "Advanced 9-Layer Decryption Complete",
-            description: "Message verified with military-grade security + user signature!",
+            description: "Message verified with military-grade security!",
           });
         }
       } else {
-        // Use enhanced 9-layer encoding
+        // Use standard 9-layer encoding
         if (mode === 'encode') {
           processedResult = encodeMessage(message, password, encodingMethod);
-          if (processedResult.includes('failed') || processedResult.includes('Missing')) {
-            throw new Error(processedResult);
+          
+          if (!processedResult || processedResult.includes('failed') || processedResult.includes('Missing')) {
+            throw new Error('Encoding failed - please check your input');
           }
+          
           saveToHistory(message, processedResult, 'encode', encodingMethod);
           toast({
             title: "9-Layer Encryption Complete",
-            description: `Successfully encoded using enhanced ${encodingMethod} cipher!`,
+            description: `Successfully encoded using ${encodingMethod} cipher!`,
           });
         } else {
           processedResult = decodeMessage(message, password, encodingMethod);
-          if (processedResult.includes('Invalid') || processedResult.includes('failed') || processedResult.includes('Missing') || processedResult.includes('verification failed')) {
-            throw new Error(processedResult);
+          
+          if (!processedResult || processedResult.includes('Invalid') || processedResult.includes('failed') || processedResult.includes('Missing') || processedResult.includes('verification failed')) {
+            throw new Error('Decoding failed - check password and message format');
           }
+          
           saveToHistory(message, processedResult, 'decode', encodingMethod);
           toast({
             title: "9-Layer Decryption Complete",
@@ -188,13 +199,15 @@ const EncodingInterface = () => {
 
   return (
     <div className="space-y-4">
-      {/* Mode Selection - Reduced width */}
-      <div className="cipher-card max-w-md">
+      {/* Mode Selection */}
+      <div className="cipher-card">
+        <h2 className="text-lg font-semibold mb-4">Encode/Decode Messages</h2>
+        
         <div className="flex items-center justify-between mb-4">
           <div className="flex space-x-2">
             <button
               onClick={() => setMode('encode')}
-              className={`px-3 py-2 rounded-lg transition-colors text-sm ${
+              className={`px-4 py-2 rounded-lg transition-colors text-sm ${
                 mode === 'encode' 
                   ? 'bg-primary text-primary-foreground' 
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -205,7 +218,7 @@ const EncodingInterface = () => {
             </button>
             <button
               onClick={() => setMode('decode')}
-              className={`px-3 py-2 rounded-lg transition-colors text-sm ${
+              className={`px-4 py-2 rounded-lg transition-colors text-sm ${
                 mode === 'decode' 
                   ? 'bg-primary text-primary-foreground' 
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -216,7 +229,6 @@ const EncodingInterface = () => {
             </button>
           </div>
           
-          {/* Clear icon in the red space */}
           <button
             onClick={clearAll}
             className="p-2 text-muted-foreground hover:text-destructive transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
@@ -224,15 +236,6 @@ const EncodingInterface = () => {
           >
             <X className="w-4 h-4" />
           </button>
-        </div>
-      </div>
-
-      {/* Input Form */}
-      <div className="cipher-card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold">
-            {mode === 'encode' ? 'Message to Encode' : 'Message to Decode'}
-          </h3>
         </div>
         
         <div className="space-y-4">
@@ -287,19 +290,6 @@ const EncodingInterface = () => {
             </div>
           </div>
 
-          {/* Advanced Security Toggle */}
-          <div>
-            <label className="flex items-center text-sm">
-              <input
-                type="checkbox"
-                checked={useAdvancedSecurity}
-                onChange={(e) => setUseAdvancedSecurity(e.target.checked)}
-                className="mr-2"
-              />
-              Use Advanced Military-Grade Security (with user fingerprint)
-            </label>
-          </div>
-
           <button
             onClick={handleProcess}
             className="mobile-button w-full flex items-center justify-center text-sm"
@@ -352,7 +342,7 @@ const EncodingInterface = () => {
               9-Layer Military-Grade Encryption Active
             </h4>
             <p className="text-xs text-green-600 dark:text-green-400">
-              Enhanced security with {useAdvancedSecurity ? 'user fingerprint, AES-256-GCM, HMAC-SHA512, anti-replay protection' : 'password-based encryption, time-based salts, anti-tamper verification'}, and expanded emoji cipher with 300+ encoding patterns.
+              Enhanced security with {getAdvancedSecuritySetting() ? 'user fingerprint, AES-256-GCM, HMAC-SHA512, anti-replay protection' : 'password-based encryption, time-based salts, anti-tamper verification'}, and expanded emoji cipher with 300+ encoding patterns.
             </p>
           </div>
         </div>
