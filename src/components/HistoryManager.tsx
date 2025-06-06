@@ -119,17 +119,17 @@ const HistoryManager = () => {
           <div className="flex space-x-2">
             <button
               onClick={exportHistory}
-              className="mobile-button-secondary flex items-center"
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
+              title="Export History"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Export
+              <Download className="w-4 h-4" />
             </button>
             <button
               onClick={clearHistory}
-              className="mobile-button-secondary flex items-center text-destructive"
+              className="p-2 text-muted-foreground hover:text-destructive transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
+              title="Clear History"
             >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Clear
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -177,12 +177,13 @@ const HistoryManager = () => {
                   {item.operation === 'encode' ? 'Original' : 'Encrypted'}:
                 </label>
                 <div className="flex items-center space-x-2">
-                  <p className="text-sm bg-muted rounded p-2 flex-1 font-mono">
+                  <p className="text-sm bg-muted rounded p-2 flex-1 font-mono" style={{ fontSize: item.method === 'emoji' ? '16px' : '12px' }}>
                     {item.original}
                   </p>
                   <button
                     onClick={() => copyToClipboard(item.original)}
                     className="p-1 hover:bg-muted rounded"
+                    title="Copy"
                   >
                     <Copy className="w-3 h-3" />
                   </button>
@@ -194,12 +195,13 @@ const HistoryManager = () => {
                   {item.operation === 'encode' ? 'Encrypted' : 'Decrypted'}:
                 </label>
                 <div className="flex items-center space-x-2">
-                  <p className="text-sm bg-muted rounded p-2 flex-1 font-mono">
+                  <p className="text-sm bg-muted rounded p-2 flex-1 font-mono" style={{ fontSize: item.method === 'emoji' ? '16px' : '12px' }}>
                     {item.processed}
                   </p>
                   <button
                     onClick={() => copyToClipboard(item.processed)}
                     className="p-1 hover:bg-muted rounded"
+                    title="Copy"
                   >
                     <Copy className="w-3 h-3" />
                   </button>

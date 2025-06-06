@@ -67,12 +67,17 @@ export const encodeWithEmojis = (text: string): string => {
   }
 };
 
-// Improved emoji decoding with better character reconstruction
+// Improved emoji decoding with better error handling
 export const decodeFromEmojis = (emojiText: string): string => {
   console.log('🔄 Starting emoji decoding for:', emojiText);
   
   try {
-    const emojiArray = Array.from(emojiText);
+    // Handle empty input
+    if (!emojiText || emojiText.trim() === '') {
+      return 'Empty emoji message';
+    }
+
+    const emojiArray = Array.from(emojiText.trim());
     let hexString = '';
     
     // Convert each emoji back to hex character
@@ -91,10 +96,17 @@ export const decodeFromEmojis = (emojiText: string): string => {
     
     console.log('🔢 Reconstructed hex:', hexString);
     
+    // Ensure hex string has even length
+    if (hexString.length % 2 !== 0) {
+      console.error('❌ Invalid hex string length:', hexString.length);
+      return 'Invalid encoded message format';
+    }
+    
     // Convert hex back to bytes and then to UTF-8 text
     const bytes = new Uint8Array(hexString.length / 2);
     for (let i = 0; i < hexString.length; i += 2) {
-      bytes[i / 2] = parseInt(hexString.substr(i, 2), 16);
+      const hexByte = hexString.substr(i, 2);
+      bytes[i / 2] = parseInt(hexByte, 16);
     }
     
     const decoder = new TextDecoder('utf-8');
@@ -139,6 +151,11 @@ export const applyPasswordDecoding = (encodedText: string, key: string): string 
   console.log('🔐 Applying password decoding to text of length:', encodedText.length);
   
   try {
+    // Handle empty input
+    if (!encodedText || encodedText.trim() === '') {
+      return 'Empty encoded message';
+    }
+
     // Decode from Base64
     const decoded = decodeURIComponent(escape(atob(encodedText)));
     const decodedArray = Array.from(decoded);
@@ -160,7 +177,7 @@ export const applyPasswordDecoding = (encodedText: string, key: string): string 
   }
 };
 
-// Main encoding function
+// Main encoding function with better error handling
 export const encodeMessage = (text: string, key: string, method: string): string => {
   if (!text || !key) return '';
   
@@ -170,6 +187,9 @@ export const encodeMessage = (text: string, key: string, method: string): string
     if (method === 'emoji') {
       // For emoji method: password encode first, then convert to emojis
       const passwordEncoded = applyPasswordEncoding(text, key);
+      if (passwordEncoded.includes('failed')) {
+        return passwordEncoded;
+      }
       return encodeWithEmojis(passwordEncoded);
     }
     
@@ -181,7 +201,7 @@ export const encodeMessage = (text: string, key: string, method: string): string
   }
 };
 
-// Main decoding function
+// Main decoding function with better error handling
 export const decodeMessage = (encodedText: string, key: string, method: string): string => {
   if (!encodedText || !key) return '';
   
@@ -191,7 +211,7 @@ export const decodeMessage = (encodedText: string, key: string, method: string):
     if (method === 'emoji') {
       // For emoji method: decode from emojis first, then password decode
       const emojiDecoded = decodeFromEmojis(encodedText);
-      if (emojiDecoded.includes('Invalid') || emojiDecoded.includes('failed')) {
+      if (emojiDecoded.includes('Invalid') || emojiDecoded.includes('failed') || emojiDecoded.includes('Empty')) {
         return emojiDecoded;
       }
       return applyPasswordDecoding(emojiDecoded, key);

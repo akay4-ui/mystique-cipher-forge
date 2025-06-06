@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { AdvancedEncryption } from '@/utils/advancedEncryption';
 import { encodeMessage, decodeMessage } from '@/utils/encodingUtils';
-import { Shield, Lock, Unlock, Copy, Share, Download, History } from 'lucide-react';
+import { Shield, Lock, Unlock, Copy, X } from 'lucide-react';
 
 const EncodingInterface = () => {
   const { user } = useAuth();
@@ -83,7 +83,7 @@ const EncodingInterface = () => {
           });
         }
       } else {
-        // Use basic encoding
+        // Use basic encoding - fix emoji handling
         if (mode === 'encode') {
           processedResult = encodeMessage(message, password, encodingMethod);
           saveToHistory(message, processedResult, 'encode', encodingMethod);
@@ -154,35 +154,6 @@ const EncodingInterface = () => {
     }
   };
 
-  const shareEncrypted = async () => {
-    if (!result) return;
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Encrypted Message',
-          text: `Encrypted message: ${result}\n\nDecrypt at: ${window.location.origin}`,
-        });
-      } catch (error) {
-        copyToClipboard(result);
-      }
-    } else {
-      copyToClipboard(result);
-    }
-  };
-
-  const downloadResult = () => {
-    if (!result) return;
-    
-    const element = document.createElement('a');
-    const file = new Blob([result], { type: 'text/plain' });
-    element.href = URL.createObjectURL(file);
-    element.download = `cipher-${mode}-${Date.now()}.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  };
-
   const clearAll = () => {
     setMessage('');
     setPassword('');
@@ -200,7 +171,7 @@ const EncodingInterface = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Mode Selection */}
       <div className="cipher-card">
         <div className="flex items-center justify-center space-x-4 mb-4">
@@ -231,9 +202,30 @@ const EncodingInterface = () => {
 
       {/* Input Form */}
       <div className="cipher-card">
-        <h3 className="text-lg font-semibold mb-4">
-          {mode === 'encode' ? 'Message to Encode' : 'Message to Decode'}
-        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">
+            {mode === 'encode' ? 'Message to Encode' : 'Message to Decode'}
+          </h3>
+          {/* Quick Action Icons */}
+          <div className="flex space-x-2">
+            {result && (
+              <button
+                onClick={() => copyToClipboard(result)}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
+                title="Copy Result"
+              >
+                <Copy className="w-4 h-4" />
+              </button>
+            )}
+            <button
+              onClick={clearAll}
+              className="p-2 text-muted-foreground hover:text-destructive transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
+              title="Clear All"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
         
         <div className="space-y-4">
           <div>
@@ -245,6 +237,7 @@ const EncodingInterface = () => {
               onChange={(e) => setMessage(e.target.value)}
               className="cipher-input w-full h-32 resize-none"
               placeholder={mode === 'encode' ? 'Enter your secret message...' : 'Paste encoded message...'}
+              style={{ fontSize: encodingMethod === 'emoji' && mode === 'decode' ? '18px' : '14px' }}
             />
           </div>
 
@@ -299,47 +292,23 @@ const EncodingInterface = () => {
       {/* Result */}
       {result && (
         <div className="cipher-card">
-          <h3 className="text-lg font-semibold mb-4">
-            {mode === 'encode' ? 'Encrypted Result' : 'Decrypted Message'}
-          </h3>
-          
-          <div className="bg-muted rounded-lg p-4 mb-4">
-            <p className="text-sm text-foreground break-all">{result}</p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">
+              {mode === 'encode' ? 'Encrypted Result' : 'Decrypted Message'}
+            </h3>
             <button
               onClick={() => copyToClipboard(result)}
-              className="mobile-button-secondary flex items-center"
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
+              title="Copy Result"
             >
-              <Copy className="w-4 h-4 mr-2" />
-              Copy
+              <Copy className="w-4 h-4" />
             </button>
-            
-            {mode === 'encode' && (
-              <button
-                onClick={shareEncrypted}
-                className="mobile-button-secondary flex items-center"
-              >
-                <Share className="w-4 h-4 mr-2" />
-                Share
-              </button>
-            )}
-            
-            <button
-              onClick={downloadResult}
-              className="mobile-button-secondary flex items-center"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Download
-            </button>
-            
-            <button
-              onClick={clearAll}
-              className="mobile-button-secondary"
-            >
-              Clear All
-            </button>
+          </div>
+          
+          <div className="bg-muted rounded-lg p-4">
+            <p className="text-sm text-foreground break-all" style={{ fontSize: encodingMethod === 'emoji' ? '18px' : '14px' }}>
+              {result}
+            </p>
           </div>
         </div>
       )}
