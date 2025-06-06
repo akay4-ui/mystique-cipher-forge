@@ -84,6 +84,9 @@ const EncodingInterface = () => {
         // Use enhanced 9-layer encoding
         if (mode === 'encode') {
           processedResult = encodeMessage(message, password, encodingMethod);
+          if (processedResult.includes('failed') || processedResult.includes('Missing')) {
+            throw new Error(processedResult);
+          }
           saveToHistory(message, processedResult, 'encode', encodingMethod);
           toast({
             title: "9-Layer Encryption Complete",
@@ -91,6 +94,9 @@ const EncodingInterface = () => {
           });
         } else {
           processedResult = decodeMessage(message, password, encodingMethod);
+          if (processedResult.includes('Invalid') || processedResult.includes('failed') || processedResult.includes('Missing') || processedResult.includes('verification failed')) {
+            throw new Error(processedResult);
+          }
           saveToHistory(message, processedResult, 'decode', encodingMethod);
           toast({
             title: "9-Layer Decryption Complete",
@@ -104,7 +110,7 @@ const EncodingInterface = () => {
       console.error('Processing error:', error);
       toast({
         title: "Processing Failed",
-        description: "Invalid format, password, or corrupted data",
+        description: error instanceof Error ? error.message : "Invalid format, password, or corrupted data",
         variant: "destructive",
       });
     }
@@ -186,30 +192,41 @@ const EncodingInterface = () => {
 
   return (
     <div className="space-y-4">
-      {/* Mode Selection */}
+      {/* Mode Selection with reduced width */}
       <div className="cipher-card">
-        <div className="flex items-center justify-center space-x-4 mb-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setMode('encode')}
+              className={`px-3 py-2 rounded-lg transition-colors text-sm ${
+                mode === 'encode' 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
+            >
+              <Lock className="w-4 h-4 mr-1 inline" />
+              Encode
+            </button>
+            <button
+              onClick={() => setMode('decode')}
+              className={`px-3 py-2 rounded-lg transition-colors text-sm ${
+                mode === 'decode' 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
+            >
+              <Unlock className="w-4 h-4 mr-1 inline" />
+              Decode
+            </button>
+          </div>
+          
+          {/* Clear icon moved to the red space you highlighted */}
           <button
-            onClick={() => setMode('encode')}
-            className={`px-4 py-2 rounded-lg transition-colors text-sm ${
-              mode === 'encode' 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
+            onClick={clearAll}
+            className="p-2 text-muted-foreground hover:text-destructive transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
+            title="Clear All"
           >
-            <Lock className="w-4 h-4 mr-1 inline" />
-            Encode
-          </button>
-          <button
-            onClick={() => setMode('decode')}
-            className={`px-4 py-2 rounded-lg transition-colors text-sm ${
-              mode === 'decode' 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            <Unlock className="w-4 h-4 mr-1 inline" />
-            Decode
+            <X className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -220,34 +237,6 @@ const EncodingInterface = () => {
           <h3 className="text-base font-semibold">
             {mode === 'encode' ? 'Message to Encode' : 'Message to Decode'}
           </h3>
-          {/* Action Icons in the space you highlighted */}
-          <div className="flex space-x-1">
-            <button
-              onClick={clearAll}
-              className="p-2 text-muted-foreground hover:text-destructive transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
-              title="Clear All"
-            >
-              <X className="w-4 h-4" />
-            </button>
-            {result && (
-              <>
-                <button
-                  onClick={() => copyToClipboard(result)}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
-                  title="Copy Result"
-                >
-                  <Copy className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={shareMessage}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
-                  title="Share"
-                >
-                  <Share2 className="w-4 h-4" />
-                </button>
-              </>
-            )}
-          </div>
         </div>
         
         <div className="space-y-4">
