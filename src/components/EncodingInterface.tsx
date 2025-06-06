@@ -14,7 +14,7 @@ const EncodingInterface = () => {
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
   const [encodingMethod, setEncodingMethod] = useState('text');
-  const [useAdvancedSecurity, setUseAdvancedSecurity] = useState(true);
+  const [useAdvancedSecurity, setUseAdvancedSecurity] = useState(false);
 
   const handleProcess = async () => {
     if (!message.trim() || !password.trim()) {
@@ -46,7 +46,7 @@ const EncodingInterface = () => {
         if (mode === 'encode') {
           const encrypted = await AdvancedEncryption.encrypt(message, enhancedPassword);
           processedResult = encodingMethod === 'emoji' 
-            ? AdvancedEncryption.hideInEmojis(encrypted.encryptedData)
+            ? AdvancedEncryption.hideInEmojis(`${encrypted.encryptedData}|${encrypted.salt}|${encrypted.iv}|${encrypted.hmac}`)
             : `${encrypted.encryptedData}|${encrypted.salt}|${encrypted.iv}|${encrypted.hmac}`;
           
           saveToHistory(message, processedResult, 'encode', encodingMethod);
@@ -56,21 +56,17 @@ const EncodingInterface = () => {
             description: "Message secured with military-grade encryption + user signature!",
           });
         } else {
+          let dataToDecrypt = message;
+          
           if (encodingMethod === 'emoji') {
-            const extractedData = AdvancedEncryption.extractFromEmojis(message);
-            const parts = extractedData.split('|');
-            if (parts.length === 4) {
-              processedResult = await AdvancedEncryption.decrypt(parts[0], enhancedPassword, parts[1], parts[2], parts[3]);
-            } else {
-              throw new Error('Invalid encrypted format');
-            }
+            dataToDecrypt = AdvancedEncryption.extractFromEmojis(message);
+          }
+          
+          const parts = dataToDecrypt.split('|');
+          if (parts.length === 4) {
+            processedResult = await AdvancedEncryption.decrypt(parts[0], enhancedPassword, parts[1], parts[2], parts[3]);
           } else {
-            const parts = message.split('|');
-            if (parts.length === 4) {
-              processedResult = await AdvancedEncryption.decrypt(parts[0], enhancedPassword, parts[1], parts[2], parts[3]);
-            } else {
-              throw new Error('Invalid encrypted format');
-            }
+            throw new Error('Invalid encrypted format - expected 4 parts separated by |');
           }
           
           saveToHistory(message, processedResult, 'decode', encodingMethod);
@@ -192,8 +188,8 @@ const EncodingInterface = () => {
 
   return (
     <div className="space-y-4">
-      {/* Mode Selection with reduced width */}
-      <div className="cipher-card">
+      {/* Mode Selection - Reduced width */}
+      <div className="cipher-card max-w-md">
         <div className="flex items-center justify-between mb-4">
           <div className="flex space-x-2">
             <button
@@ -220,7 +216,7 @@ const EncodingInterface = () => {
             </button>
           </div>
           
-          {/* Clear icon moved to the red space you highlighted */}
+          {/* Clear icon in the red space */}
           <button
             onClick={clearAll}
             className="p-2 text-muted-foreground hover:text-destructive transition-colors bg-background border border-border rounded-lg hover:shadow-sm"
@@ -291,6 +287,19 @@ const EncodingInterface = () => {
             </div>
           </div>
 
+          {/* Advanced Security Toggle */}
+          <div>
+            <label className="flex items-center text-sm">
+              <input
+                type="checkbox"
+                checked={useAdvancedSecurity}
+                onChange={(e) => setUseAdvancedSecurity(e.target.checked)}
+                className="mr-2"
+              />
+              Use Advanced Military-Grade Security (with user fingerprint)
+            </label>
+          </div>
+
           <button
             onClick={handleProcess}
             className="mobile-button w-full flex items-center justify-center text-sm"
@@ -343,7 +352,7 @@ const EncodingInterface = () => {
               9-Layer Military-Grade Encryption Active
             </h4>
             <p className="text-xs text-green-600 dark:text-green-400">
-              Enhanced security with user fingerprint, time-based salts, anti-tamper verification, and expanded emoji cipher with {encodingMethod === 'emoji' ? '300+' : 'text'} encoding patterns.
+              Enhanced security with {useAdvancedSecurity ? 'user fingerprint, AES-256-GCM, HMAC-SHA512, anti-replay protection' : 'password-based encryption, time-based salts, anti-tamper verification'}, and expanded emoji cipher with 300+ encoding patterns.
             </p>
           </div>
         </div>
